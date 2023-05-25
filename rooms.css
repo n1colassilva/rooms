@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap");
+
+:root {
+	--background: #1c1b1f;
+	--surface-0: #313033;
+	--surface-1: #484649;
+}
+
+* {
+	font-size: 20px;
+	box-sizing: border-box;
+	margin: 0;
+	font-family: "Fira Code", monospace;
+}
+
+body {
+	background-color: var(--background);
+	color: white;
+	width: 100%;
+
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+
+header {
+	width: 100%;
+	text-align: center;
+	background-color: var(--surface-0);
+	height: 4em;
+	padding: 1em;
+	font-size: 1.2em;
+}
+
+main {
+	line-height: 1em;
+}
+
+#game-field {
+	display: grid;
+	box-sizing: border-box;
+	margin: 20px;
+	width: 100%;
+	height: 100%;
+	grid-template-columns: repeat(var(--columns), 1fr); /* Adjust the width of columns as needed */
+	grid-template-rows: repeat(var(--rows) 1ch); /* Adjust the number of rows and the height of rows as needed */
+	line-height: 1em; /* Remove spacing between rows */
+	gap: 0;
+}
+
+#field-wrapper {
+	padding: 1em 1ch;
+	margin: 20px;
+
+	background-color: black;
+	color: white;
+}
