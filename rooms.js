@@ -5,17 +5,21 @@ let field = {
 	 */
 	element: document.getElementById("game-field"),
 
+	//! make sure anything that changes this sets it as an even
+
 	/**
 	 * The number of columns in the field.
 	 * @type {number}
+	 * !Make sure it's an even number so 0,0 is centered
 	 */
 	columns: 40,
 
 	/**
 	 * The number of rows in the field.
 	 * @type {number}
+	 * !Make sure it's an even number so 0,0 is centered
 	 */
-	rows: 40,
+	rows: 20,
 
 	/**
 	 * Initializes the game field by populating it with cells.
@@ -28,14 +32,27 @@ let field = {
 		 * @param {number} row - The row index of the cell.
 		 * @param {number} column - The column index of the cell.
 		 */
-		//TODO: Make the center be 0,0
+		//DONE: Make the center be 0,0
 		//TODO: Allow expansion or widening support (conserve or move 0,0 accordingly)
 
 		function createCell(row, column) {
 			const cell = document.createElement("span");
 			cell.textContent = "'";
-			cell.dataset.x = column - 1; // Start from 0 for x-coordinate
-			cell.dataset.y = row - 1; // Start from 0 for y-coordinate
+
+			// Calculate the adjusted x and y coordinates
+			const adjustedX = column - Math.ceil(this.columns / 2);
+			const adjustedY = row - Math.ceil(this.rows / 2);
+
+			cell.dataset.x = adjustedX;
+			cell.dataset.y = -adjustedY; // Invert the y-coordinate to have negative values
+
+			//EPIC CELL DATA STUFF
+			//CHAPTER NAME: UNFORESEEN CONSEQUENCES
+
+			cell.celldata = {
+				
+			}
+
 			this.element.appendChild(cell);
 		}
 
@@ -55,11 +72,16 @@ let field = {
 	 */
 	setCellContent: function (char, x, y) {
 		let locatedCell = field.element.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-		if (locatedCell) {
-			locatedCell.textContent = char;
+
+		if (Math.abs(x) > field.rows / 2 || Math.abs(y) > field.columns || typeof char != "string") {
+			console.log(`Error: cell x:${x},y:${y} doesn't exist, uh oh`);
+			// DONE: Add error handling if the locatedCell is not found.
+		} else if (locatedCell) {
+			locatedCell.textContent = char[0]; //[0] so no multichar malarkey happens
+		} else {
+			console.log("You're gonna have a bad time"); // DoN'T iNcLuDe LoGs iN pRoD
 		}
 	},
-	// TODO: Add error handling if the locatedCell is not found.
 
 	/**
 	 * Retrieves information about a specific cell in the game field.
@@ -90,6 +112,8 @@ let field = {
 };
 
 let draw = {
+	//!BAD! - PERFORMANCE IMPACT NEGLIGIBLE
+	//! DEPRECATED UNTILL FURTHER NOTICE
 	/**
 	 * Draws a line using a simple algorithm.
 	 *
@@ -109,33 +133,33 @@ let draw = {
 	 * The function sets the specified character in each cell along the line path using the `setCellContent` function.
 	 * If the start and end points do not align along any axis, an "Invalid line coordinates" message is logged to the console.
 	 */
-	_simpleLine: function (char, startPoint, endPoint) {
-		// Convert coordinates to integers
-		startPoint.x = Math.floor(startPoint.x);
-		startPoint.y = Math.floor(startPoint.y);
-		endPoint.x = Math.floor(endPoint.x);
-		endPoint.y = Math.floor(endPoint.y);
+	// _simpleLine: function (char, startPoint, endPoint) {
+	// 	// Convert coordinates to integers
+	// 	startPoint.x = Math.floor(startPoint.x);
+	// 	startPoint.y = Math.floor(startPoint.y);
+	// 	endPoint.x = Math.floor(endPoint.x);
+	// 	endPoint.y = Math.floor(endPoint.y);
 
-		if (Math.abs(startPoint.x - endPoint.x) === 0) {
-			// If the x-coordinates are the same, draw along the y-axis
-			let minY = Math.min(startPoint.y, endPoint.y);
-			let maxY = Math.max(startPoint.y, endPoint.y);
+	// 	if (Math.abs(startPoint.x - endPoint.x) === 0) {
+	// 		// If the x-coordinates are the same, draw along the y-axis
+	// 		let minY = Math.min(startPoint.y, endPoint.y);
+	// 		let maxY = Math.max(startPoint.y, endPoint.y);
 
-			for (let y = minY; y <= maxY; y++) {
-				field.setCellContent(char, startPoint.x, y);
-			}
-		} else if (Math.abs(startPoint.y - endPoint.y) === 0) {
-			// If the y-coordinates are the same, draw along the x-axis
-			let minX = Math.min(startPoint.x, endPoint.x);
-			let maxX = Math.max(startPoint.x, endPoint.x);
+	// 		for (let y = minY; y <= maxY; y++) {
+	// 			field.setCellContent(char, startPoint.x, y);
+	// 		}
+	// 	} else if (Math.abs(startPoint.y - endPoint.y) === 0) {
+	// 		// If the y-coordinates are the same, draw along the x-axis
+	// 		let minX = Math.min(startPoint.x, endPoint.x);
+	// 		let maxX = Math.max(startPoint.x, endPoint.x);
 
-			for (let x = minX; x <= maxX; x++) {
-				field.setCellContent(char, x, startPoint.y);
-			}
-		} else {
-			console.log("Invalid line coordinates");
-		}
-	},
+	// 		for (let x = minX; x <= maxX; x++) {
+	// 			field.setCellContent(char, x, startPoint.y);
+	// 		}
+	// 	} else {
+	// 		console.log("Invalid line coordinates");
+	// 	}
+	// },
 
 	/**
 	 * Draws a line on the field using the Bresenham algorithm.
@@ -150,6 +174,9 @@ let draw = {
 
 	// TODO?: return all the elements used for the line for setting classes
 	line: function (char, startPoint, endPoint) {
+		let affectedCells; // variable to return relevant cells as an array of objects
+		// usefull for graphics, gameplay etc
+		//todo: grab cell data obj from affected cells instead of changing it myself
 		const dx = Math.abs(endPoint.x - startPoint.x);
 		const dy = Math.abs(endPoint.y - startPoint.y);
 		const sx = startPoint.x < endPoint.x ? 1 : -1;
@@ -169,6 +196,8 @@ let draw = {
 				err += dx;
 				y += sy;
 			}
+
+			affectedCells.push();
 		}
 		// Set the content for the end point
 		field.setCellContent(char, endPoint.x, endPoint.y);
@@ -213,6 +242,7 @@ let draw = {
 		draw.line(char, bottomLeftPoint, startPoint); // Left side
 	},
 
+	//todo: make filled box >:(
 	//filledBox: function (char, startPoint, endPoint) {
 
 	// let inde
@@ -223,26 +253,20 @@ let draw = {
 	// },
 };
 
-
 /**
- * Functions to handle messy inputs
- * 
+ * Functions to handle messy inputs *
+ *
  * !(TRY TO USE THEM ONLY) FOR DEBUGGING PURPOSES!
  */
 let inputSanitizer = {
-
 	/**
 	 * recieves x y and char
-	 * returns object with those properties 
+	 * returns object with those properties
 	 */
-	coordsObjectificator: function () {
-		
-	},
+	coordsObjectificator: function () {},
 
-	integer : function () {
-		
-	},
-}
+	integer: function () {},
+};
 
 let rootStyle = document.documentElement.style;
 rootStyle.setProperty("--columns", field.columns);
