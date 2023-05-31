@@ -49,11 +49,14 @@ let field = {
 			//EPIC CELL DATA STUFF
 			//CHAPTER NAME: UNFORESEEN CONSEQUENCES
 
-			cell.celldata = {
-				
-			}
+			cell.cellData = {
+				x: parseInt(cell.dataset.x),
+				y: parseInt(cell.dataset.y),
+				char: cell.textContent, // god i hope this allows the cell to get modified
+				element: cell, // so the functions that find it can just grab this object and are ablre to reference the dom
+			};
 
-			this.element.appendChild(cell);
+			this.element.appendChild(cell); //Appends the cell to the field element (it took me embarrasingly long to re-remember what this was)
 		}
 
 		for (let row = 1; row <= this.rows; row++) {
@@ -64,50 +67,38 @@ let field = {
 	},
 
 	/**
-	 * Sets the content of a specific cell in the game field.
-	 *
-	 * @param {string} char - The character to be displayed in the cell.
-	 * @param {number} x - The x-coordinate of the cell.
-	 * @param {number} y - The y-coordinate of the cell.
-	 */
-	setCellContent: function (char, x, y) {
-		let locatedCell = field.element.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-
-		if (Math.abs(x) > field.rows / 2 || Math.abs(y) > field.columns || typeof char != "string") {
-			console.log(`Error: cell x:${x},y:${y} doesn't exist, uh oh`);
-			// DONE: Add error handling if the locatedCell is not found.
-		} else if (locatedCell) {
-			locatedCell.textContent = char[0]; //[0] so no multichar malarkey happens
-		} else {
-			console.log("You're gonna have a bad time"); // DoN'T iNcLuDe LoGs iN pRoD
-		}
-	},
-
-	/**
-	 * Retrieves information about a specific cell in the game field.
-	 *
-	 * @param {object} coordinates - The coordinates of the cell.
-	 * @param {number} coordinates.x - The x-coordinate of the cell.
-	 * @param {number} coordinates.y - The y-coordinate of the cell.
-	 * @returns {object} - An object representing the cell.
-	 * @property {HTMLElement} element - The DOM element representing the cell.
-	 * @property {string} char - The character displayed in the cell.
-	 * @property {number} x - The x-coordinate of the cell.
-	 * @property {number} y - The y-coordinate of the cell.
+	 * Returns cellData object from cell dom object from desired cell
+	 * @param {object} coordinates coordinates object
+	 * @param {number} coordinates.x x coordinate of desired cell
+	 * @param {number} coordinates.y y coordinate of desired cell
+	 * @param {object} cell returns the cellData object found in cell dom object
 	 */
 	getCell: function (coordinates) {
 		// Select the cell element based on the provided coordinates
-		let cell = {
-			element: field.element.querySelector(`[data-x="${coordinates.x}"][data-y="${coordinates.y}"]`),
-			char: "", // Placeholder for the character displayed in the cell
-			x: coordinates.x, // The x-coordinate of the cell
-			y: coordinates.y, // The y-coordinate of the cell
-		};
-		cell.char = cell.element.textContent; // Retrieve the character displayed in the cell
-		// Note: You can't directly reference the element property inside the object
-		// This workaround assigns the character value separately
-		// not really a dirty hack but still annoys me
+		// Grabs the celldata defined at cell creation
+		let cell = field.element.querySelector(`[data-x="${coordinates.x}"][data-y="${coordinates.y}"]`).cellData;
+
 		return cell;
+	},
+
+	/**
+	 * Simple function to set the content of a specific cell in the game field.
+	 *
+	 * @param {string} char - The character to be displayed in the cell.
+	 * @param {number} coordinates.x - The x-coordinate of the cell.
+	 * @param {number} coordinates.y - The y-coordinate of the cell.
+	 */
+	setCellContent: function (char, coordinates) {
+		let locatedCellData = field.getCell(coordinates);
+
+		if (Math.abs(locatedCellData.x) > field.rows / 2 || Math.abs(locatedCellData.y) > field.columns || typeof char != "string") {
+			console.log(`Error: cell x:${locatedCellData.x},y:${locatedCellData.y} doesn't exist, uh oh`);
+			// DONE: Add error handling if the locatedCell is not found.
+		} else if (locatedCellData) {
+			locatedCellData.element.textContent = char[0]; //[0] so no multichar malarkey happens
+		} else {
+			console.log("You're gonna have a bad time"); // DoN'T iNcLuDe LoGs iN pRoD
+		}
 	},
 };
 
@@ -174,9 +165,9 @@ let draw = {
 
 	// TODO?: return all the elements used for the line for setting classes
 	line: function (char, startPoint, endPoint) {
-		let affectedCells; // variable to return relevant cells as an array of objects
+		let affectedCells; // variable to return modified cells as an array of objects
 		// usefull for graphics, gameplay etc
-		//todo: grab cell data obj from affected cells instead of changing it myself
+
 		const dx = Math.abs(endPoint.x - startPoint.x);
 		const dy = Math.abs(endPoint.y - startPoint.y);
 		const sx = startPoint.x < endPoint.x ? 1 : -1;
@@ -186,7 +177,7 @@ let draw = {
 		let y = startPoint.y;
 
 		while (x !== endPoint.x || y !== endPoint.y) {
-			field.setCellContent(char, x, y);
+			field.setCellContent(char, { x: x, y: y });
 			const err2 = 2 * err;
 			if (err2 > -dy) {
 				err -= dy;
@@ -197,10 +188,13 @@ let draw = {
 				y += sy;
 			}
 
-			affectedCells.push();
+			affectedCells.push(field.getCell({ x: x, y: y }));
 		}
+
 		// Set the content for the end point
-		field.setCellContent(char, endPoint.x, endPoint.y);
+		field.setCellContent(char, endPoint);
+
+		return affectedCells;
 	},
 
 	/**
@@ -260,10 +254,16 @@ let draw = {
  */
 let inputSanitizer = {
 	/**
-	 * recieves x y and char
-	 * returns object with those properties
+	 * recieves x y
+	 * returns object with those as properties
 	 */
-	coordsObjectificator: function () {},
+	coords: function (x, y) {
+		const coordsOBJ = {
+			x: x,
+			y: y,
+		};
+		return coordsOBJ;
+	},
 
 	integer: function () {},
 };
