@@ -153,20 +153,23 @@ let draw = {
 	// },
 
 	/**
-	 * Draws a line on the field using the Bresenham algorithm.
-	 * @param {string} char - The character used to draw the line.
+	 * Draws a line on the game field between the start and end points,
+	 * and returns the modified cells as an array of objects if specified.
+	 * Useful for graphics, gameplay, etc.
+	 *
+	 * @param {string} char - The character to represent the line.
 	 * @param {Object} startPoint - The starting point of the line.
 	 * @param {number} startPoint.x - The x-coordinate of the starting point.
 	 * @param {number} startPoint.y - The y-coordinate of the starting point.
 	 * @param {Object} endPoint - The ending point of the line.
 	 * @param {number} endPoint.x - The x-coordinate of the ending point.
 	 * @param {number} endPoint.y - The y-coordinate of the ending point.
+	 * @param {boolean} [returnCells=false] - Determines whether to return the modified cells.
+	 * @returns {Array|null} An array of objects representing the modified cells if `returnCells` is `true`, or `null` otherwise.
 	 */
 
-	// TODO?: return all the elements used for the line for setting classes
-	line: function (char, startPoint, endPoint) {
-		let affectedCells; // variable to return modified cells as an array of objects
-		// usefull for graphics, gameplay etc
+	line: function (char, startPoint, endPoint, returnCells = false) {
+		let affectedCells;
 
 		const dx = Math.abs(endPoint.x - startPoint.x);
 		const dy = Math.abs(endPoint.y - startPoint.y);
@@ -188,13 +191,19 @@ let draw = {
 				y += sy;
 			}
 
-			affectedCells.push(field.getCell({ x: x, y: y }));
+			if (returnCells === true) {
+				affectedCells.push(field.getCell({ x: x, y: y }));
+			}
 		}
 
 		// Set the content for the end point
 		field.setCellContent(char, endPoint);
 
-		return affectedCells;
+		if (returnCells) {
+			return affectedCells;
+		} else {
+			return null;
+		}
 	},
 
 	/**
@@ -207,7 +216,9 @@ let draw = {
 	 * @param {number} endPoint.x - The x-coordinate of the bottom-right point.
 	 * @param {number} endPoint.y - The y-coordinate of the bottom-right point.
 	 */
-	square: function (char, startPoint, endPoint) {
+	square: function (char, startPoint, endPoint, returnAffectedCells = false) {
+		let affectedCells = [];
+
 		// Make the startPoint be the top left and endPoint be the bottom right
 		if (endPoint.x < startPoint.x) {
 			[startPoint.x, endPoint.x] = [endPoint.x, startPoint.x]; // Switch them around
@@ -230,42 +241,77 @@ let draw = {
 		let topRightPoint = field.getCell({ x: endPoint.x, y: startPoint.y });
 		let bottomLeftPoint = field.getCell({ x: startPoint.x, y: endPoint.y });
 
-		draw.line(char, startPoint, topRightPoint); // Top side
-		draw.line(char, topRightPoint, endPoint); // Right side
-		draw.line(char, endPoint, bottomLeftPoint); // Bottom side
-		draw.line(char, bottomLeftPoint, startPoint); // Left side
+		if (returnAffectedCells === true) {
+			affectedCells += draw.line(char, startPoint, topRightPoint, true); // Top side
+			affectedCells += draw.line(char, topRightPoint, endPoint, true); // Right side
+			affectedCells += draw.line(char, endPoint, bottomLeftPoint, true); // Bottom side
+			affectedCells += draw.line(char, bottomLeftPoint, startPoint, true); // Left side
+
+			return affectedCells;
+		} else {
+			draw.line(char, startPoint, topRightPoint); // Top side
+			draw.line(char, topRightPoint, endPoint); // Right side
+			draw.line(char, endPoint, bottomLeftPoint); // Bottom side
+			draw.line(char, bottomLeftPoint, startPoint); // Left side
+		}
 	},
 
-	//todo: make filled box >:(
-	//filledBox: function (char, startPoint, endPoint) {
+	/**
+	 * Fills a rectangular box on the game field with a specified character.
+	 * Optionally returns the modified cells as an array of cell objects.
+	 * @param {string} char - The character to fill the box with.
+	 * @param {Object} startPoint - The starting point of the box.
+	 * @param {number} startPoint.x - The x-coordinate of the starting point.
+	 * @param {number} startPoint.y - The y-coordinate of the starting point.
+	 * @param {Object} endPoint - The ending point of the box.
+	 * @param {number} endPoint.x - The x-coordinate of the ending point.
+	 * @param {number} endPoint.y - The y-coordinate of the ending point.
+	 * @param {boolean} [returnCells=true] - Optional. Specifies whether to return the modified cells as an array.
+	 * @returns {Array<Object>} - An array of modified cell objects if returnCells is true, otherwise undefined.
+	 */
+	filledBox: function (char, startPoint, endPoint, returnCells = true) {
+		const adjustedStartX = startPoint.x - Math.floor(this.columns / 2);
+		const adjustedStartY = Math.floor(this.rows / 2) - startPoint.y;
+		const adjustedEndX = endPoint.x - Math.floor(this.columns / 2);
+		const adjustedEndY = Math.floor(this.rows / 2) - endPoint.y;
 
-	// let inde
-	// 	for (let index.x = 0; index.x < ; index.x++) {
-	// 		const element = array[index.x];
+		let affectedCells = [];
 
-	// 	}
-	// },
+		// Iterate over each cell within the box boundaries
+		for (let y = adjustedStartY; y <= adjustedEndY; y++) {
+			for (let x = adjustedStartX; x <= adjustedEndX; x++) {
+				// Set the content of the cell
+				field.setCellContent(char, { x, y });
+
+				// Store the modified cell in the affectedCells array
+				affectedCells.push(field.getCell({ x, y }));
+			}
+		}
+
+		// Return affectedCells array if returnCells is true
+		if (returnCells) {
+			return affectedCells;
+		}
+	},
 };
 
 /**
- * Functions to handle messy inputs *
- *
- * !(TRY TO USE THEM ONLY) FOR DEBUGGING PURPOSES!
+ * Utility functions to handle input sanitization.
+ * Note: Use these functions only for debugging purposes!
  */
 let inputSanitizer = {
 	/**
-	 * recieves x y
-	 * returns object with those as properties
+	 * Sanitizes coordinates input and returns an object with x and y properties.
+	 * @param {number} x - The x-coordinate value.
+	 * @param {number} y - The y-coordinate value.
+	 * @returns {Object} - An object with x and y properties.
 	 */
 	coords: function (x, y) {
-		const coordsOBJ = {
+		return {
 			x: x,
 			y: y,
 		};
-		return coordsOBJ;
 	},
-
-	integer: function () {},
 };
 
 let rootStyle = document.documentElement.style;

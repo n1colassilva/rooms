@@ -1,0 +1,6 @@
+{
+	"prettier.printWidth": 160,
+	"prettier.bracketSameLine": true,
+	"prettier.singleAttributePerLine": true,
+	"prettier.withNodeModules": true
+}
