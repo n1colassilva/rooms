@@ -88,17 +88,18 @@ let field = {
 	 * @param {number} coordinates.x - The x-coordinate of the cell.
 	 * @param {number} coordinates.y - The y-coordinate of the cell.
 	 */
-	setCellContent: function (char, coordinates) {
-		let locatedCellData = field.getCell(coordinates);
+	setCellContent: function (char, position) {
+		const x = position.x;
+		const y = position.y;
 
-		if (Math.abs(locatedCellData.x) > field.rows / 2 || Math.abs(locatedCellData.y) > field.columns || typeof char != "string") {
-			console.log(`Error: cell x:${locatedCellData.x},y:${locatedCellData.y} doesn't exist, uh oh`);
-			// DONE: Add error handling if the locatedCell is not found.
-		} else if (locatedCellData) {
-			locatedCellData.element.textContent = char[0]; //[0] so no multichar malarkey happens
-		} else {
-			console.log("You're gonna have a bad time"); // DoN'T iNcLuDe LoGs iN pRoD
+		// Select the cell element based on the provided coordinates
+		const cellElement = this.element.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+
+		if (!cellElement) {
+			throw new Error("Invalid cell position");
 		}
+
+		cellElement.textContent = char;
 	},
 };
 

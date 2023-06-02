@@ -7,36 +7,44 @@ let player = {
 	},
 
 	setPosition: function (xPos, yPos) {
-		const cell = field.getCell({ x: xPos, y: yPos }); //get celldata
-		player.position.backgroundChar = cell.char; //save bg char
+		const cell = field.getCell({ x: xPos, y: yPos }); // get cell data
+		player.position.backgroundChar = cell.char; // save background char
 		field.setCellContent(player.playerChar, cell); // make the char be the player
+
+		// Update player's position
+		player.position.x = xPos;
+		player.position.y = yPos;
 	},
 
 	move: function (direction) {
 		function moveTo(x, y) {
-			// take bgchar and set it as the char proper
+			// Take bgchar and set it as the char proper
 			field.setCellContent(player.position.backgroundChar, player.position);
 
-			// take char of desired position and store as bgchar
+			// Take char of desired position and store as bgchar
 			player.position.backgroundChar = field.getCell({ x: x, y: y }).char;
 
-			// set char proper of desired position as the player
-			
+			// Set char proper of desired position as the player
+			field.setCellContent(player.playerChar, { x: x, y: y });
+
+			// Update player's position
+			player.position.x = x;
+			player.position.y = y;
 		}
 
 		const pos = player.position;
 		switch (direction) {
 			case "north":
-				pos.y++;
+				moveTo(pos.x, pos.y + 1);
 				break;
 			case "east":
-				pos.x++;
+				moveTo(pos.x + 1, pos.y);
 				break;
 			case "south":
-				pos.y--;
+				moveTo(pos.x, pos.y - 1);
 				break;
 			case "west":
-				pos.x--;
+				moveTo(pos.x - 1, pos.y);
 				break;
 			// case "northeast":
 			// 	pos.x++;
@@ -85,3 +93,4 @@ let player = {
 };
 
 player.listenForArrowKeys();
+player.setPosition(0, 0);
