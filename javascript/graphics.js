@@ -32,31 +32,28 @@ let field = {
 		 * @param {number} row - The row index of the cell.
 		 * @param {number} column - The column index of the cell.
 		 */
-		//DONE: Make the center be 0,0
-		//TODO: Allow expansion or widening support (conserve or move 0,0 accordingly)
-
 		function createCell(row, column) {
 			const cell = document.createElement("span");
 			cell.textContent = "'";
 
 			// Calculate the adjusted x and y coordinates
-			const adjustedX = column - Math.ceil(this.columns / 2);
-			const adjustedY = row - Math.ceil(this.rows / 2);
+			const adjustedX = column - Math.floor(this.columns / 2) - 1;
+			const adjustedY = Math.floor(this.rows / 2) - row + 1;
 
 			cell.dataset.x = adjustedX;
-			cell.dataset.y = -adjustedY; // Invert the y-coordinate to have negative values
+			cell.dataset.y = adjustedY;
 
-			//EPIC CELL DATA STUFF
-			//CHAPTER NAME: UNFORESEEN CONSEQUENCES
+			// EPIC CELL DATA STUFF
+			// CHAPTER NAME: UNFORESEEN CONSEQUENCES
 
 			cell.cellData = {
 				x: parseInt(cell.dataset.x),
 				y: parseInt(cell.dataset.y),
-				char: cell.textContent, // god i hope this allows the cell to get modified
-				element: cell, // so the functions that find it can just grab this object and are ablre to reference the dom
+				char: cell.textContent,
+				element: cell,
 			};
 
-			this.element.appendChild(cell); //Appends the cell to the field element (it took me embarrasingly long to re-remember what this was)
+			this.element.appendChild(cell);
 		}
 
 		for (let row = 1; row <= this.rows; row++) {

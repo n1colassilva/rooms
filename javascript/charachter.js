@@ -18,10 +18,16 @@ let player = {
 
 	move: function (direction) {
 		function moveTo(x, y) {
+			// Check if the desired position is within the field boundaries
+			if (x < -field.columns / 2 || x >= field.columns / 2 || y < -field.rows / 2 || y >= field.rows / 2) {
+				// Invalid cell position
+				return;
+			}
+
 			// Take bgchar and set it as the char proper
 			field.setCellContent(player.position.backgroundChar, player.position);
 
-			// Take char of desired position and store as bgchar
+			// Take char of desired position and store it as bgchar
 			player.position.backgroundChar = field.getCell({ x: x, y: y }).char;
 
 			// Set char proper of desired position as the player
