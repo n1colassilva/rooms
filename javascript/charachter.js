@@ -19,9 +19,9 @@ let player = {
 	move: function (direction) {
 		function moveTo(x, y) {
 			// Check if the desired position is within the field boundaries
-			if (x < -field.columns / 2 || x >= field.columns / 2 || y < -field.rows / 2 || y >= field.rows / 2) {
+			if (x < -field.columns / 2 || x > field.columns / 2 || y < -field.rows / 2 - 1 || y >= field.rows / 2) {
 				// Invalid cell position
-				return;
+				throw console.error("trying to move out of bounds eh?");
 			}
 
 			// Take bgchar and set it as the char proper

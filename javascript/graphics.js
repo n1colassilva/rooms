@@ -10,14 +10,12 @@ let field = {
 	/**
 	 * The number of columns in the field.
 	 * @type {number}
-	 * !Make sure it's an even number so 0,0 is centered
 	 */
-	columns: 40,
+	columns: 20,
 
 	/**
 	 * The number of rows in the field.
 	 * @type {number}
-	 * !Make sure it's an even number so 0,0 is centered
 	 */
 	rows: 20,
 
@@ -38,7 +36,8 @@ let field = {
 
 			// Calculate the adjusted x and y coordinates
 			const adjustedX = column - Math.floor(this.columns / 2) - 1;
-			const adjustedY = Math.floor(this.rows / 2) - row + 1;
+			// Calculate the adjusted y-coordinate
+			const adjustedY = Math.floor(this.rows / 2) - row;
 
 			cell.dataset.x = adjustedX;
 			cell.dataset.y = adjustedY;
@@ -56,9 +55,9 @@ let field = {
 			this.element.appendChild(cell);
 		}
 
-		for (let row = 1; row <= this.rows; row++) {
-			for (let column = 1; column <= this.columns; column++) {
-				createCell.call(this, row, column);
+		for (let row = 0; row <= this.rows; row++) {
+			for (let column = 0; column <= this.columns; column++) {
+				createCell.call(this, row + 1, column + 1);
 			}
 		}
 	},
@@ -313,6 +312,6 @@ let inputSanitizer = {
 };
 
 let rootStyle = document.documentElement.style;
-rootStyle.setProperty("--columns", field.columns);
-rootStyle.setProperty("--rows", field.rows);
+rootStyle.setProperty("--columns", field.columns + 1);
+rootStyle.setProperty("--rows", field.rows + 1);
 field.startField();
