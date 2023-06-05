@@ -77,26 +77,44 @@ let player = {
 	listenForArrowKeys: function () {
 		document.addEventListener("keydown", function (event) {
 			const key = event.key;
-			switch (key) {
-				case "ArrowUp":
-					player.move("north");
-					break;
-				case "ArrowDown":
-					player.move("south");
-					break;
-				case "ArrowLeft":
-					player.move("west");
-					break;
-				case "ArrowRight":
-					player.move("east");
-					break;
-				default:
-					// Ignore other key presses
-					break;
+
+			// Check if the arrow keys should be used for movement
+			const shouldUseArrowKeys = field.element.matches(":focus");
+
+			if (shouldUseArrowKeys) {
+				switch (key) {
+					case "ArrowUp":
+						player.move("north");
+						break;
+					case "ArrowDown":
+						player.move("south");
+						break;
+					case "ArrowLeft":
+						player.move("west");
+						break;
+					case "ArrowRight":
+						player.move("east");
+						break;
+					default:
+						// Ignore other key presses
+						break;
+				}
 			}
 		});
 	},
 };
+
+
+field.element.addEventListener("keydown", function (event) {
+	if (event.key.startsWith("Arrow")) {
+		event.preventDefault();
+		// Handle game movement
+	}
+});
+
+field.element.addEventListener("mousedown", function () {
+	field.element.focus();
+});
 
 player.listenForArrowKeys();
 player.setPosition(0, 0);

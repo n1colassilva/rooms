@@ -46,6 +46,10 @@ main {
 	gap: 0;
 }
 
+#game-field:focus{
+	
+}
+
 #field-wrapper {
 	box-sizing: content-box;
 	margin: 20px;

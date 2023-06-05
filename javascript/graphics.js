@@ -4,8 +4,11 @@ let field = {
 	 * @type {HTMLElement}
 	 */
 	element: document.getElementById("game-field"),
-
-	//! make sure anything that changes this sets it as an even
+	/**
+	 * Indicates whether the game has focus or not
+	 * @type {boolean}
+	 */
+	focus: false,
 
 	/**
 	 * The number of columns in the field.
