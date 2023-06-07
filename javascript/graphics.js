@@ -325,13 +325,21 @@ field.startField();
 // Add a click event listener to the game field
 field.element.addEventListener("click", () => {
 	const fieldWrapper = document.getElementById("field-wrapper");
-	const fieldRect = fieldWrapper.getBoundingClientRect();
-	const fieldCenterY = fieldRect.top + fieldRect.height / 2;
-	const viewportCenterY = window.innerHeight / 2;
-	const offsetTop = fieldCenterY - viewportCenterY;
+	const fieldHeight = fieldWrapper.offsetHeight;
+	const screenHeight = window.innerHeight;
+	const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
+	// Calculate the target scroll position
+	const targetScrollTop = currentScrollTop + fieldWrapper.getBoundingClientRect().top - (screenHeight - fieldHeight) / 2;
+
+	// Check if the field is already centered
+	if (Math.abs(currentScrollTop - targetScrollTop) < 1) {
+		return; // No need to scroll
+	}
+
+	// Scroll the page to the calculated offset
 	window.scrollTo({
-		top: offsetTop,
-		behavior: "smooth",
+		top: targetScrollTop,
+		behavior: "smooth", // Optional: Add smooth scrolling effect
 	});
 });
