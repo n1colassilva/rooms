@@ -39,15 +39,18 @@ main {
 #game-field {
 	display: grid;
 	box-sizing: border-box;
-	margin: 20px;
+	margin: 0px;
 	grid-template-columns: repeat(var(--columns), 1fr); /* Adjust the width of columns as needed */
 	grid-template-rows: repeat(var(--rows) 1ch); /* Adjust the number of rows and the height of rows as needed */
 	line-height: 1em; /* Remove spacing between rows */
 	gap: 0;
 }
 
-#game-field:focus{
-	
+#game-field:focus {
+	color: white;
+	outline: white;
+	outline-style: dotted;
+	outline-offset: 20px;
 }
 
 #field-wrapper {

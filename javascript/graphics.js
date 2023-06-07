@@ -14,13 +14,13 @@ let field = {
 	 * The number of columns in the field.
 	 * @type {number}
 	 */
-	columns: 20,
+	columns: 45,
 
 	/**
 	 * The number of rows in the field.
 	 * @type {number}
 	 */
-	rows: 20,
+	rows: 25,
 
 	/**
 	 * Initializes the game field by populating it with cells.
@@ -35,7 +35,7 @@ let field = {
 		 */
 		function createCell(row, column) {
 			const cell = document.createElement("span");
-			cell.textContent = "'";
+			cell.textContent = "·";
 
 			// Calculate the adjusted x and y coordinates
 			const adjustedX = column - Math.floor(this.columns / 2) - 1;
@@ -314,7 +314,24 @@ let inputSanitizer = {
 	},
 };
 
+// startup sequence
 let rootStyle = document.documentElement.style;
 rootStyle.setProperty("--columns", field.columns + 1);
 rootStyle.setProperty("--rows", field.rows + 1);
 field.startField();
+
+// Center game field when clicked
+
+// Add a click event listener to the game field
+field.element.addEventListener("click", () => {
+	const fieldWrapper = document.getElementById("field-wrapper");
+	const fieldRect = fieldWrapper.getBoundingClientRect();
+	const fieldCenterY = fieldRect.top + fieldRect.height / 2;
+	const viewportCenterY = window.innerHeight / 2;
+	const offsetTop = fieldCenterY - viewportCenterY;
+
+	window.scrollTo({
+		top: offsetTop,
+		behavior: "smooth",
+	});
+});
