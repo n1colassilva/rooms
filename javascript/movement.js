@@ -19,7 +19,7 @@ let player = {
 	move: function (direction) {
 		function moveTo(x, y) {
 			// Check if the desired position is within the field boundaries
-			if (x < -field.columns / 2 || x > field.columns / 2 || y < -field.rows / 2 - 1 || y >= field.rows / 2) {
+			if (x < -field.columns / 2 || x > field.columns / 2 || y < -field.rows / 2 || y >= field.rows / 2 + 1) {
 				// Invalid cell position
 				throw console.error("trying to move out of bounds eh?");
 			}
@@ -73,8 +73,32 @@ let player = {
 		}
 	},
 
-	// Creating event listeners for movement
 	listenForArrowKeys: function () {
+		const movementInterval = 60; // Interval between movements in milliseconds
+		let movementTimer = null;
+		const activeDirections = {}; // Track active movement directions and their key codes
+
+		function startMovement(direction, keyCode) {
+			activeDirections[direction] = keyCode; // Store the direction and its key code
+			if (!movementTimer) {
+				movementTimer = setInterval(function () {
+					for (const direction in activeDirections) {
+						player.move(direction);
+					}
+				}, movementInterval);
+			}
+		}
+
+		function stopMovement(direction, keyCode) {
+			delete activeDirections[direction]; // Remove the direction and its key code
+			if (Object.keys(activeDirections).length === 0) {
+				if (movementTimer) {
+					clearInterval(movementTimer);
+					movementTimer = null;
+				}
+			}
+		}
+
 		document.addEventListener("keydown", function (event) {
 			const key = event.key;
 
@@ -84,16 +108,16 @@ let player = {
 			if (shouldUseArrowKeys) {
 				switch (key) {
 					case "ArrowUp":
-						player.move("north");
+						startMovement("north", key);
 						break;
 					case "ArrowDown":
-						player.move("south");
+						startMovement("south", key);
 						break;
 					case "ArrowLeft":
-						player.move("west");
+						startMovement("west", key);
 						break;
 					case "ArrowRight":
-						player.move("east");
+						startMovement("east", key);
 						break;
 					default:
 						// Ignore other key presses
@@ -101,9 +125,21 @@ let player = {
 				}
 			}
 		});
+
+		document.addEventListener("keyup", function (event) {
+			const key = event.key;
+
+			if (key.startsWith("Arrow")) {
+				for (const direction in activeDirections) {
+					if (activeDirections[direction] === key) {
+						stopMovement(direction, key);
+						break;
+					}
+				}
+			}
+		});
 	},
 };
-
 
 field.element.addEventListener("keydown", function (event) {
 	if (event.key.startsWith("Arrow")) {
