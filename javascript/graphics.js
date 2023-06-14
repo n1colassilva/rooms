@@ -327,7 +327,7 @@ field.element.addEventListener("click", () => {
 	const fieldWrapper = document.getElementById("field-wrapper");
 	const fieldHeight = fieldWrapper.offsetHeight;
 	const screenHeight = window.innerHeight;
-	const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+	const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
 
 	// Calculate the target scroll position
 	const targetScrollTop = currentScrollTop + fieldWrapper.getBoundingClientRect().top - (screenHeight - fieldHeight) / 2;
