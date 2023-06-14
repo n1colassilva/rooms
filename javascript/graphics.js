@@ -14,13 +14,13 @@ let field = {
 	 * The number of columns in the field.
 	 * @type {number}
 	 */
-	columns: 45,
+	columns: 11,
 
 	/**
 	 * The number of rows in the field.
 	 * @type {number}
 	 */
-	rows: 25,
+	rows: 11,
 
 	/**
 	 * Initializes the game field by populating it with cells.
@@ -39,8 +39,7 @@ let field = {
 
 			// Calculate the adjusted x and y coordinates
 			const adjustedX = column - Math.floor(this.columns / 2) - 1;
-			// Calculate the adjusted y-coordinate
-			const adjustedY = Math.floor(this.rows / 2) - row;
+			const adjustedY = Math.floor(this.rows / 2) - row + 1;
 
 			cell.dataset.x = adjustedX;
 			cell.dataset.y = adjustedY;
@@ -315,6 +314,14 @@ let inputSanitizer = {
 };
 
 // startup sequence
+// fix column amount to an even number
+// will be rounded UP
+if (field.columns % 2 != 0) {
+	field.columns++;
+}
+if (field.rows % 2 != 0) {
+	field.rows++;
+}
 let rootStyle = document.documentElement.style;
 rootStyle.setProperty("--columns", field.columns + 1);
 rootStyle.setProperty("--rows", field.rows + 1);
