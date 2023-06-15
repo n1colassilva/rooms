@@ -14,13 +14,13 @@ let field = {
 	 * The number of columns in the field.
 	 * @type {number}
 	 */
-	columns: 11,
+	columns: 21,
 
 	/**
 	 * The number of rows in the field.
 	 * @type {number}
 	 */
-	rows: 11,
+	rows: 21,
 
 	/**
 	 * Initializes the game field by populating it with cells.
@@ -279,11 +279,13 @@ let draw = {
 		// Iterate over each cell within the box boundaries
 		for (let y = adjustedStartY; y <= adjustedEndY; y++) {
 			for (let x = adjustedStartX; x <= adjustedEndX; x++) {
+				const cell = this.getCell({ x: x, y: y });
+
 				// Set the content of the cell
-				field.setCellContent(char, { x, y });
+				this.setCellContent(char, { x: x, y: y });
 
 				// Store the modified cell in the affectedCells array
-				affectedCells.push(field.getCell({ x, y }));
+				affectedCells.push(cell);
 			}
 		}
 
@@ -296,9 +298,8 @@ let draw = {
 
 /**
  * Utility functions to handle input sanitization.
- * Note: Use these functions only for debugging purposes!
  */
-let inputSanitizer = {
+let inputUtil = {
 	/**
 	 * Sanitizes coordinates input and returns an object with x and y properties.
 	 * @param {number} x - The x-coordinate value.
@@ -310,6 +311,37 @@ let inputSanitizer = {
 			x: x,
 			y: y,
 		};
+	},
+
+	/**
+	 * Converts the input into an array. If the input is already an array, it is returned as is.
+	 * If the input is not an array, it is wrapped in an array and returned.
+	 *
+	 * @param {*} input - The input value to convert into an array.
+	 * @returns {Array} - The input value converted into an array.
+	 */
+	arrayer: function (input) {
+		if (Array.isArray(input) == true) {
+			return input;
+		} else {
+			const output = [input];
+			return output;
+		}
+	},
+};
+
+let propertySetter = {
+	/**
+	 * Sets the 'playerCollision' property to true for the specified cells.
+	 *
+	 * @param {Array|*} cells - An array of cells or a single cell to set the 'playerCollision' property for.
+	 */
+	playerCollision: function (cells) {
+		inputUtil.arrayer(cells);
+
+		cells.forEach((element) => {
+			element.playerCollision = true;
+		});
 	},
 };
 

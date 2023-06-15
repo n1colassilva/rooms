@@ -22,20 +22,22 @@ let player = {
 			if (x < -field.columns / 2 || x > field.columns / 2 || y < -field.rows / 2 || y >= field.rows / 2 + 1) {
 				// Invalid cell position
 				throw console.error("trying to move out of bounds eh?");
+			} else if (field.getCell({ x: x, y: y }).playerCollision == true) {
+				// yep that's right, nothing
+			} else {
+				// Take bgchar and set it as the char proper
+				field.setCellContent(player.position.backgroundChar, player.position);
+
+				// Take char of desired position and store it as bgchar
+				player.position.backgroundChar = field.getCell({ x: x, y: y }).char;
+
+				// Set char proper of desired position as the player
+				field.setCellContent(player.playerChar, { x: x, y: y });
+
+				// Update player's position
+				player.position.x = x;
+				player.position.y = y;
 			}
-
-			// Take bgchar and set it as the char proper
-			field.setCellContent(player.position.backgroundChar, player.position);
-
-			// Take char of desired position and store it as bgchar
-			player.position.backgroundChar = field.getCell({ x: x, y: y }).char;
-
-			// Set char proper of desired position as the player
-			field.setCellContent(player.playerChar, { x: x, y: y });
-
-			// Update player's position
-			player.position.x = x;
-			player.position.y = y;
 		}
 
 		const pos = player.position;
