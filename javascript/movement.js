@@ -54,22 +54,6 @@ let player = {
 			case "west":
 				moveTo(pos.x - 1, pos.y);
 				break;
-			// case "northeast":
-			// 	pos.x++;
-			// 	pos.y++;
-			// 	break;
-			// case "southeast":
-			// 	pos.x++;
-			// 	pos.y--;
-			// 	break;
-			// case "southwest":
-			// 	pos.x--;
-			// 	pos.y--;
-			// 	break;
-			// case "northwest":
-			// 	pos.x--;
-			// 	pos.y++;
-			// break;
 			default:
 				break;
 		}

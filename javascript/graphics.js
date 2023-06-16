@@ -85,8 +85,9 @@ let field = {
 	 * @param {string} char - The character to be displayed in the cell.
 	 * @param {number} coordinates.x - The x-coordinate of the cell.
 	 * @param {number} coordinates.y - The y-coordinate of the cell.
+	 * @return {cellData object} - Optionally return the celldata of the desired cell
 	 */
-	setCellContent: function (char, position) {
+	setCellContent: function (char, position, returnCell = false) {
 		const x = position.x;
 		const y = position.y;
 
@@ -98,6 +99,10 @@ let field = {
 		}
 
 		cellElement.textContent = char;
+
+		if (returnCell == true) {
+			return cellElement.cellData;
+		}
 	},
 };
 
@@ -268,30 +273,31 @@ let draw = {
 	 * @param {boolean} [returnCells=true] - Optional. Specifies whether to return the modified cells as an array.
 	 * @returns {Array<Object>} - An array of modified cell objects if returnCells is true, otherwise undefined.
 	 */
-	filledBox: function (char, startPoint, endPoint, returnCells = true) {
-		const adjustedStartX = startPoint.x - Math.floor(this.columns / 2);
-		const adjustedStartY = Math.floor(this.rows / 2) - startPoint.y;
-		const adjustedEndX = endPoint.x - Math.floor(this.columns / 2);
-		const adjustedEndY = Math.floor(this.rows / 2) - endPoint.y;
-
-		let affectedCells = [];
-
-		// Iterate over each cell within the box boundaries
-		for (let y = adjustedStartY; y <= adjustedEndY; y++) {
-			for (let x = adjustedStartX; x <= adjustedEndX; x++) {
-				const cell = this.getCell({ x: x, y: y });
-
-				// Set the content of the cell
-				this.setCellContent(char, { x: x, y: y });
-
-				// Store the modified cell in the affectedCells array
-				affectedCells.push(cell);
-			}
+	filledBox: function (char, startPoint, endPoint, returnCells = false) {
+		let startPointCPY = Object.assign({}, startPoint);
+		let endPointCPY = Object.assign({}, endPoint);
+		// Make the startPoint be the top left and endPoint be the bottom right
+		if (endPointCPY.x < startPointCPY.x) {
+			[startPointCPY.x, endPointCPY.x] = [endPointCPY.x, startPointCPY.x]; // Switch them around
 		}
 
-		// Return affectedCells array if returnCells is true
-		if (returnCells) {
-			return affectedCells;
+		if (endPointCPY.y < startPointCPY.y) {
+			[startPointCPY.y, endPointCPY.y] = [endPointCPY.y, startPointCPY.y]; // Switch them around
+		}
+
+		/**
+		 * Epic square reference
+		 *    startPoint.x, startPoint.y___startPoint.x, endPoint.y
+		 *    		|							|
+		 *    	   	|						   	|
+		 *    		|							|
+		 *    endPoint.x, startPoint.y___endPoint.x, endPoint.y
+		 */
+
+		for (let j = startPointCPY.y; j <= endPointCPY.y; j++) {
+			for (let i = startPointCPY.x; i <= endPointCPY.x; i++) {
+				field.setCellContent(char, { x: i, y: j },returnCells);
+			}
 		}
 	},
 };
