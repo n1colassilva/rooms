@@ -35,7 +35,8 @@ let field = {
 		 */
 		function createCell(row, column) {
 			const cell = document.createElement("span");
-			cell.textContent = "·";
+			cell.classList.add("cell");
+			cell.textContent = " ";
 
 			// Calculate the adjusted x and y coordinates
 			const adjustedX = column - Math.floor(this.columns / 2) - 1;
