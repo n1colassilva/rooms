@@ -50,7 +50,12 @@ let field = {
 			cell.cellData = {
 				x: parseInt(cell.dataset.x),
 				y: parseInt(cell.dataset.y),
-				char: cell.textContent,
+				get char() {
+					return cell.textContent;
+				},
+				set char(value) {
+					cell.textContent = value;
+				},
 				element: cell,
 			};
 
@@ -276,6 +281,7 @@ let draw = {
 	filledBox: function (char, startPoint, endPoint, returnCells = false) {
 		let startPointCPY = Object.assign({}, startPoint);
 		let endPointCPY = Object.assign({}, endPoint);
+
 		// Make the startPoint be the top left and endPoint be the bottom right
 		if (endPointCPY.x < startPointCPY.x) {
 			[startPointCPY.x, endPointCPY.x] = [endPointCPY.x, startPointCPY.x]; // Switch them around
@@ -288,16 +294,23 @@ let draw = {
 		/**
 		 * Epic square reference
 		 *    startPoint.x, startPoint.y___startPoint.x, endPoint.y
-		 *    		|							|
-		 *    	   	|						   	|
-		 *    		|							|
+		 *         |                          |
+		 *         |                          |
+		 *         |                          |
 		 *    endPoint.x, startPoint.y___endPoint.x, endPoint.y
 		 */
 
+		const modifiedCells = []; // Array to store the modified cells
+
 		for (let j = startPointCPY.y; j <= endPointCPY.y; j++) {
 			for (let i = startPointCPY.x; i <= endPointCPY.x; i++) {
-				field.setCellContent(char, { x: i, y: j },returnCells);
+				const cell = field.setCellContent(char, { x: i, y: j }, true); // Capture the returned cellData object
+				modifiedCells.push(cell); // Add the cellData object to the modifiedCells array
 			}
+		}
+
+		if (returnCells) {
+			return modifiedCells; // Return the array of modified cellData objects
 		}
 	},
 };
@@ -343,7 +356,7 @@ let propertySetter = {
 	 * @param {Array|*} cells - An array of cells or a single cell to set the 'playerCollision' property for.
 	 */
 	playerCollision: function (cells) {
-		inputUtil.arrayer(cells);
+		cells = inputUtil.arrayer(cells); // Update the 'cells' variable with the converted array
 
 		cells.forEach((element) => {
 			element.playerCollision = true;
