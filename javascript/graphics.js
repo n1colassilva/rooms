@@ -14,13 +14,15 @@ let field = {
 	 * The number of columns in the field.
 	 * @type {number}
 	 */
-	columns: 21,
+	columns: 40,
 
 	/**
 	 * The number of rows in the field.
 	 * @type {number}
 	 */
-	rows: 21,
+	rows: 20,
+
+	cellDataMatrix: [],
 
 	/**
 	 * Initializes the game field by populating it with cells.
@@ -47,6 +49,7 @@ let field = {
 
 			// EPIC CELL DATA STUFF
 			// CHAPTER NAME: UNFORESEEN CONSEQUENCES
+			//21/06/23 - this has actually been the best idea i had
 
 			cell.cellData = {
 				x: parseInt(cell.dataset.x),
@@ -60,7 +63,11 @@ let field = {
 				element: cell,
 			};
 
+			// puts cell on grid
 			this.element.appendChild(cell);
+
+			// adds cell to appropriate matrix position
+			// DO THIS NEXT TIME SILLY
 		}
 
 		for (let row = 0; row <= this.rows; row++) {
@@ -279,7 +286,7 @@ let draw = {
 	 * @param {boolean} [returnCells=true] - Optional. Specifies whether to return the modified cells as an array.
 	 * @returns {Array<Object>} - An array of modified cell objects if returnCells is true, otherwise undefined.
 	 */
-	filledBox: function (char, startPoint, endPoint, returnCells = false) {
+	square: function (char, startPoint, endPoint, returnCells = false) {
 		let startPointCPY = Object.assign({}, startPoint);
 		let endPointCPY = Object.assign({}, endPoint);
 
