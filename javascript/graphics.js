@@ -5,7 +5,7 @@ const field = {
    */
   element: document.getElementById("game-field"),
   /**
-   * Indicates whether the game has focus or not
+   * Indicates whether the game has focus or not.
    * @type {boolean}
    */
   focus: false,
