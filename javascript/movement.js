@@ -16,16 +16,11 @@ const player = {
     player.position.y = yPos;
   },
 
-  /**
-   * Moves the charachter
-   * @param {*} direction
-   */
   move: function (direction) {
     /**
-     * Helper function for the move function
-     * checks for limits and moves the player
-     * @param {*} x
-     * @param {*} y
+     * Moves player to determined position
+     * @param {Int} x
+     * @param {Int} y
      */
     function moveTo(x, y) {
       // Check if the desired position is within the field boundaries
@@ -78,26 +73,29 @@ const player = {
     const movementInterval = 60; // Interval between movements in milliseconds
     let movementTimer = null;
     const activeDirections = {}; // Track active movement directions and their key codes
+
     /**
-     * Moves the player in the set direction
-     * @param {string} direction What cardinal direction player is moving
-     * @param {keyCode} keyCode Key that is pressed
+     * Starts the movement in the specified direction.
+     * @param {string} direction - The cardinal direction in which the movement should occur.
+     * @param {string} keyCode - The key code associated with the direction.
      */
     function startMovement(direction, keyCode) {
       activeDirections[direction] = keyCode; // Store the direction and its key code
       if (!movementTimer) {
         movementTimer = setInterval(function () {
-          Object.values(activeDirections).forEach((direction) => {
-            player.move(direction);
-          });
+          for (const direction in activeDirections) {
+            if (activeDirections.hasOwnProperty(direction)) {
+              player.move(direction);
+            }
+          }
         }, movementInterval);
       }
     }
 
     /**
-     * helper function that stops movement
-     * @param {string} direction Direction as a string, based on compass directions
-     * @param {keyCode} keyCode What key is pressed
+     * Stops the movement in the specified direction.
+     * @param {string} direction - The cardinal direction to stop the movement.
+     * @param {string} keyCode - The key code associated with the direction.
      */
     function stopMovement(direction, keyCode) {
       delete activeDirections[direction]; // Remove the direction and its key code
