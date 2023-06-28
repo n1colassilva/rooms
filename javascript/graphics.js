@@ -22,7 +22,10 @@ const field = {
    */
   rows: 20,
 
-  cellDataMatrix: [],
+  /**
+   * Matrix containing the cell elements in the grid
+   */
+  cellMatrix: new CenteredMatrix(this.columns, this.rows),
 
   /**
    * Initializes the game field by populating it with cells.
@@ -66,8 +69,10 @@ const field = {
       // puts cell on grid
       this.element.appendChild(cell);
 
+      cell.addEventListener("click"); // TODO: add the function to handlle the click and publish it
+
       // adds cell to appropriate matrix position
-      // DO THIS NEXT TIME SILLY
+      cellMatrix[cell.cellData.x][cell.cellData.x] = cell;
     }
 
     for (let row = 0; row <= this.rows; row++) {
@@ -392,9 +397,10 @@ const rootStyle = document.documentElement.style;
 rootStyle.setProperty("--columns", field.columns + 1);
 rootStyle.setProperty("--rows", field.rows + 1);
 field.startField();
+// End of startup sequence
 
+// =======================start of control interface i guess?=========================
 // Center game field when clicked
-
 // Add a click event listener to the game field
 field.element.addEventListener("click", () => {
   const fieldWrapper = document.getElementById("field-wrapper");
@@ -419,3 +425,7 @@ field.element.addEventListener("click", () => {
     behavior: "smooth", // Optional: Add smooth scrolling effect
   });
 });
+
+const fieldClickHandler = {
+  // TBD
+};

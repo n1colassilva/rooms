@@ -36,6 +36,11 @@ editor = {
     },
   },
 
-  listenForCellClick: function () {},
+  listenForCellClick: function () {
+    /*
+      god help me for these promises i do not know
+     */
+    
+  },
   listenForChar: function () {},
 };
