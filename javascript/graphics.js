@@ -25,7 +25,9 @@ const field = {
   /**
    * Matrix containing the cell elements in the grid
    */
-  cellMatrix: new CenteredMatrix(this.columns, this.rows),
+  cellMatrix: new CenteredMatrix(parseInt(this.columns), parseInt(this.rows)),
+
+  clickRegistry: new EventRegistry(),
 
   /**
    * Initializes the game field by populating it with cells.
@@ -69,10 +71,15 @@ const field = {
       // puts cell on grid
       this.element.appendChild(cell);
 
-      cell.addEventListener("click"); // TODO: add the function to handlle the click and publish it
+      cell.addEventListener("click", function (event) {
+        // grab the element itself
+        const clickedCell = event.target;
+
+        gridClickRegistry.publish("click", clickedCell);
+      });
 
       // adds cell to appropriate matrix position
-      cellMatrix[cell.cellData.x][cell.cellData.x] = cell;
+      cellMatrix[adjustedX][adjustedY];
     }
 
     for (let row = 0; row <= this.rows; row++) {

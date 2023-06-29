@@ -10,7 +10,6 @@ class CenteredMatrix {
    */
   constructor(width, height) {
     this.width = Math.ceil(width / 2) * 2;
-
     this.height = Math.ceil(height / 2) * 2;
 
     this.data = [];
@@ -29,28 +28,43 @@ class CenteredMatrix {
       }
       this.data.push(row);
     }
+  }
 
-    // Override the getter and setter for the matrix to allow accessing elements using centeredMatrix[y][x] syntax
-    this.data = new Proxy(this.data, {
-      get(target, prop) {
-        if (typeof prop === "string" && /^\d+$/.test(prop)) {
-          const rowIndex = parseInt(prop);
-          return target[rowIndex - startY];
-        }
-        return target[prop];
-      },
-      set(target, prop, value) {
-        if (typeof prop === "string" && /^\d+$/.test(prop)) {
-          const rowIndex = parseInt(prop);
-          target[rowIndex - startY] = value;
-        } else {
-          target[prop] = value;
-        }
-        return true;
-      },
-    });
+  /**
+   * Retrieves the value at the specified coordinates.
+   * @param {number} x - The x-coordinate.
+   * @param {number} y - The y-coordinate.
+   * @return {*} The value at the specified coordinates.
+   */
+  get(x, y) {
+    const adjustedX = x + Math.floor(this.width / 2);
+    const adjustedY = y + Math.floor(this.height / 2);
+    return this.data[adjustedY][adjustedX];
+  }
+
+  /**
+   * Sets the value at the specified coordinates.
+   * @param {number} x - The x-coordinate.
+   * @param {number} y - The y-coordinate.
+   * @param {*} value - The value to set.
+   */
+  set(x, y, value) {
+    const adjustedX = x + Math.floor(this.width / 2);
+    const adjustedY = y + Math.floor(this.height / 2);
+    this.data[adjustedY][adjustedX] = value;
+  }
+
+  /**
+   * Provides the array-like syntax to access elements in the centered matrix.
+   * @param {number} x - The x-coordinate.
+   * @return {Array} The array-like object representing the row at the specified x-coordinate.
+   */
+  [Symbol.for("nodejs.util.inspect.custom")](x) {
+    const adjustedX = x + Math.floor(this.width / 2);
+    return this.data[adjustedX];
   }
 }
+
 /**
  * Event registry
  * to handle event distribution
