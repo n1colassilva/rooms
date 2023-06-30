@@ -1,67 +1,65 @@
 /**
- * Represents a centered matrix with customizable dimensions.
- * The matrix is centered at (0, 0), and the size provided is divided by 2 (rounded up) to determine the number of elements in each direction.
+ * Represents a matrix with 0,0 as the center, allows negative values, must be pre defined
  */
 class CenteredMatrix {
   /**
-   * Creates a new instance of the centered matrix.
-   * @param {number} width - Width of the matrix.
-   * @param {number} height - Height of the matrix.
+   * Constructs a new CenteredMatrix instance.
+   * @param {number} width - The width of the matrix.
+   * @param {number} height - The height of the matrix.
    */
   constructor(width, height) {
-    this.width = Math.ceil(width / 2) * 2;
-    this.height = Math.ceil(height / 2) * 2;
+    this.width = width;
+    this.height = height;
+    this.matrix = this.createMatrix(width, height);
+  }
 
-    this.data = [];
+  /**
+   * Creates a new matrix with the specified width and height.
+   * @private
+   * @param {number} width - The width of the matrix.
+   * @param {number} height - The height of the matrix.
+   * @return {Array<Array<any>>} - The created matrix.
+   */
+  createMatrix(width, height) {
+    const matrix = [];
+    const startX = -Math.floor(width / 2);
+    const startY = -Math.floor(height / 2);
+    const endX = Math.ceil(width / 2);
+    const endY = Math.ceil(height / 2);
 
-    // Calculate the starting and ending indices for x and y
-    const startX = -Math.floor(this.width / 2);
-    const endX = Math.floor(this.width / 2);
-    const startY = -Math.floor(this.height / 2);
-    const endY = Math.floor(this.height / 2);
-
-    // Initialize the matrix with null values
-    for (let y = startY; y <= endY; y++) {
-      const row = [];
-      for (let x = startX; x <= endX; x++) {
-        row.push(null);
+    for (let x = startX; x <= endX; x++) {
+      const column = [];
+      for (let y = startY; y <= endY; y++) {
+        column.push(null);
       }
-      this.data.push(row);
+      matrix.push(column);
     }
+
+    return matrix;
   }
 
   /**
    * Retrieves the value at the specified coordinates.
    * @param {number} x - The x-coordinate.
    * @param {number} y - The y-coordinate.
-   * @return {*} The value at the specified coordinates.
+   * @return {any} - The value at the given coordinates.
    */
   get(x, y) {
     const adjustedX = x + Math.floor(this.width / 2);
     const adjustedY = y + Math.floor(this.height / 2);
-    return this.data[adjustedY][adjustedX];
+    return this.matrix[adjustedX][adjustedY];
   }
 
   /**
    * Sets the value at the specified coordinates.
    * @param {number} x - The x-coordinate.
    * @param {number} y - The y-coordinate.
-   * @param {*} value - The value to set.
+   * @param {any} value - The value to be set.
    */
   set(x, y, value) {
     const adjustedX = x + Math.floor(this.width / 2);
     const adjustedY = y + Math.floor(this.height / 2);
-    this.data[adjustedY][adjustedX] = value;
-  }
-
-  /**
-   * Provides the array-like syntax to access elements in the centered matrix.
-   * @param {number} x - The x-coordinate.
-   * @return {Array} The array-like object representing the row at the specified x-coordinate.
-   */
-  [Symbol.for("nodejs.util.inspect.custom")](x) {
-    const adjustedX = x + Math.floor(this.width / 2);
-    return this.data[adjustedX];
+    CenteredMatrix.matrix[adjustedX][adjustedY] = value;
   }
 }
 

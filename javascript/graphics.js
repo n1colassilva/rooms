@@ -25,7 +25,7 @@ const field = {
   /**
    * Matrix containing the cell elements in the grid
    */
-  cellMatrix: new CenteredMatrix(parseInt(this.columns), parseInt(this.rows)),
+  cellMatrix: new CenteredMatrix(this.columns, this.rows),
 
   clickRegistry: new EventRegistry(),
 
@@ -79,7 +79,7 @@ const field = {
       });
 
       // adds cell to appropriate matrix position
-      cellMatrix[adjustedX][adjustedY];
+      this.cellMatrix.set(adjustedX, adjustedY, cell);
     }
 
     for (let row = 0; row <= this.rows; row++) {
