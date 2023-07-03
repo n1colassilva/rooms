@@ -59,7 +59,7 @@ class CenteredMatrix {
   set(x, y, value) {
     const adjustedX = x + Math.floor(this.width / 2);
     const adjustedY = y + Math.floor(this.height / 2);
-    CenteredMatrix.matrix[adjustedX][adjustedY] = value;
+    this.matrix[adjustedX][adjustedY] = value;
   }
 }
 

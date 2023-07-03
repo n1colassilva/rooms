@@ -25,22 +25,24 @@ const field = {
   /**
    * Matrix containing the cell elements in the grid
    */
-  cellMatrix: new CenteredMatrix(this.columns, this.rows),
+  cellMatrix: null,
 
-  clickRegistry: new EventRegistry(),
+  clickRegistry: null,
 
   /**
    * Initializes the game field by populating it with cells.
    * Each cell is represented by a span element with coordinates.
    */
   startField: function () {
+    this.cellMatrix = new CenteredMatrix(this.columns, this.rows);
+    this.clickRegistry = new EventRegistry();
     /**
      * Populates the game field with cells.
      * Each cell is represented by a span element.
      * @param {number} row - The row index of the cell.
      * @param {number} column - The column index of the cell.
      */
-    function createCell(row, column) {
+    const createCell = (row, column) => {
       const cell = document.createElement("span");
       cell.classList.add("cell");
       cell.textContent = " ";
@@ -68,19 +70,19 @@ const field = {
         element: cell,
       };
 
+      // adds cell to appropriate matrix position
+      this.cellMatrix.set(adjustedX, adjustedY, cell);
+
       // puts cell on grid
       this.element.appendChild(cell);
 
-      cell.addEventListener("click", function (event) {
+      cell.addEventListener("click", (event) => {
         // grab the element itself
         const clickedCell = event.target;
 
-        gridClickRegistry.publish("click", clickedCell);
+        this.clickRegistry.publish("click", clickedCell);
       });
-
-      // adds cell to appropriate matrix position
-      this.cellMatrix.set(adjustedX, adjustedY, cell);
-    }
+    };
 
     for (let row = 0; row <= this.rows; row++) {
       for (let column = 0; column <= this.columns; column++) {
