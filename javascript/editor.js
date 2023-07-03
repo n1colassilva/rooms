@@ -36,11 +36,16 @@ editor = {
     },
   },
 
-  listenForCellClick: function () {
-    /*
-      god help me for these promises i do not know
-     */
-    
+  /**
+   * waits for a cell click via pub sub, used in draw
+   * functions to allow mouse input
+   */
+  listenForCellClick: async function () {
+    (
+      await new Promise((resolve) =>
+        field.clickRegistry.subscribe("click", resolve)
+      )
+    ).YOUR_PUBLICATION_DATA_PROPERTY;
   },
   listenForChar: function () {},
 };

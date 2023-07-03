@@ -27,6 +27,9 @@ const field = {
    */
   cellMatrix: null,
 
+  /**
+   * Recieves only click events, publishes the cell that was clicked
+   */
   clickRegistry: null,
 
   /**

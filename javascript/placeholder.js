@@ -96,6 +96,8 @@ class EventRegistry {
 
   /**
    * Method to publish an event
+   * @param {string} event - Name of event
+   * @param {any} data - what to publish
    */
   publish(event, data) {
     // Check for subscribers
