@@ -1,4 +1,14 @@
 /**
+ * This file contains several classes used throughout the app
+ *
+ * These are grouped together because they are intended to be reused and expanded
+ * where necessary
+ *
+ * TODO: Eslint will complain about the classes not being used and i should do something about it
+ * ? Maybe make eslint read all files as one
+ */
+
+/**
  * Represents a matrix with 0,0 as the center, allows negative values, must be pre defined
  */
 class CenteredMatrix {

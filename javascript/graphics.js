@@ -1,3 +1,10 @@
+/**
+ * This file is responsible for:
+ * Handling graphics field and it's properties
+ * Handling field modification
+ * And finally handling drawing on the field
+ */
+
 const field = {
   /**
    * The DOM element representing the game field.
@@ -136,78 +143,26 @@ const field = {
     cellElement.textContent = char;
 
     if (returnCell == true) {
-      return cellElement.cellData;
+      return cellElement;
     }
   },
 };
 
-const draw = {
-  // !BAD! - PERFORMANCE IMPACT NEGLIGIBLE
-  // ! DEPRECATED UNTILL FURTHER NOTICE
-  /**
-   * Draws a line using a simple algorithm.
-   *
-   * @param {string} char - The character used to draw the line.
-   * @param {Object} startPoint - The starting point of the line.
-   * @param {number} startPoint.x - The x-coordinate of the starting point.
-   * @param {number} startPoint.y - The y-coordinate of the starting point.
-   * @param {Object} endPoint - The ending point of the line.
-   * @param {number} endPoint.x - The x-coordinate of the ending point.
-   * @param {number} endPoint.y - The y-coordinate of the ending point.
-   *
-   * @description
-   * This function draws a line between the given start and end points using a simple algorithm.
-   * The line can be drawn vertically (along the y-axis) or horizontally (along the x-axis).
-   * If the x-coordinates of the start and end points are the same, the line is drawn along the y-axis.
-   * If the y-coordinates are the same, the line is drawn along the x-axis.
-   * The function sets the specified character in each cell along the line path using the `setCellContent` function.
-   * If the start and end points do not align along any axis, an "Invalid line coordinates" message is logged to the console.
-   */
-  // _simpleLine: function (char, startPoint, endPoint) {
-  // 	// Convert coordinates to integers
-  // 	startPoint.x = Math.floor(startPoint.x);
-  // 	startPoint.y = Math.floor(startPoint.y);
-  // 	endPoint.x = Math.floor(endPoint.x);
-  // 	endPoint.y = Math.floor(endPoint.y);
-
-  // 	if (Math.abs(startPoint.x - endPoint.x) === 0) {
-  // 		// If the x-coordinates are the same, draw along the y-axis
-  // 		let minY = Math.min(startPoint.y, endPoint.y);
-  // 		let maxY = Math.max(startPoint.y, endPoint.y);
-
-  // 		for (let y = minY; y <= maxY; y++) {
-  // 			field.setCellContent(char, startPoint.x, y);
-  // 		}
-  // 	} else if (Math.abs(startPoint.y - endPoint.y) === 0) {
-  // 		// If the y-coordinates are the same, draw along the x-axis
-  // 		let minX = Math.min(startPoint.x, endPoint.x);
-  // 		let maxX = Math.max(startPoint.x, endPoint.x);
-
-  // 		for (let x = minX; x <= maxX; x++) {
-  // 			field.setCellContent(char, x, startPoint.y);
-  // 		}
-  // 	} else {
-  // 		console.log("Invalid line coordinates");
-  // 	}
-  // },
-
+const select = {
   /**
    * Draws a line on the game field between the start and end points,
    * and returns the modified cells as an array of objects if specified.
    * Useful for graphics, gameplay, etc.
    *
-   * @param {string} char - The character to represent the line.
    * @param {Object} startPoint - The starting point of the line.
    * @param {number} startPoint.x - The x-coordinate of the starting point.
    * @param {number} startPoint.y - The y-coordinate of the starting point.
    * @param {Object} endPoint - The ending point of the line.
    * @param {number} endPoint.x - The x-coordinate of the ending point.
    * @param {number} endPoint.y - The y-coordinate of the ending point.
-   * @param {boolean} [returnCells=false] - Determines whether to return the modified cells.
-   * @returns {Array|null} An array of objects representing the modified cells if `returnCells` is `true`, or `null` otherwise.
+   * @return {Array|null} An array of objects representing the chosen cells
    */
-
-  line: function (char, startPoint, endPoint, returnCells = false) {
+  line: function (startPoint, endPoint) {
     let affectedCells;
 
     const dx = Math.abs(endPoint.x - startPoint.x);
@@ -219,7 +174,7 @@ const draw = {
     let y = startPoint.y;
 
     while (x !== endPoint.x || y !== endPoint.y) {
-      field.setCellContent(char, { x: x, y: y });
+      affectedCells.push(field.getCell({ x: x, y: y }));
       const err2 = 2 * err;
       if (err2 > -dy) {
         err -= dy;
@@ -229,36 +184,26 @@ const draw = {
         err += dx;
         y += sy;
       }
-
-      if (returnCells === true) {
-        affectedCells.push(field.getCell({ x: x, y: y }));
-      }
     }
 
-    // Set the content for the end point
-    field.setCellContent(char, endPoint);
+    // Includes the end point
+    affectedCells.push(field.getCell(endPoint));
 
-    if (returnCells) {
-      return affectedCells;
-    } else {
-      return null;
-    }
+    return affectedCells;
   },
 
   /**
    * Draws a square on the field using the provided character.
-   * @param {string} char - The character used to draw the square.
    * @param {Object} startPoint - The top-left point of the square.
    * @param {number} startPoint.x - The x-coordinate of the top-left point.
    * @param {number} startPoint.y - The y-coordinate of the top-left point.
    * @param {Object} endPoint - The bottom-right point of the square.
    * @param {number} endPoint.x - The x-coordinate of the bottom-right point.
    * @param {number} endPoint.y - The y-coordinate of the bottom-right point.
-   * @param {boolean} [returnAffectedCells=false] - Determines whether to return the modified cells.
    * @return {Array|null} Array of objects affected
    */
-  square: function (char, startPoint, endPoint, returnAffectedCells = false) {
-    let affectedCells = [];
+  square: function (startPoint, endPoint) {
+    const affectedCells = [];
 
     // Make the startPoint be the top left and endPoint be the bottom right
     if (endPoint.x < startPoint.x) {
@@ -282,35 +227,25 @@ const draw = {
     const topRightPoint = field.getCell({ x: endPoint.x, y: startPoint.y });
     const bottomLeftPoint = field.getCell({ x: startPoint.x, y: endPoint.y });
 
-    if (returnAffectedCells === true) {
-      affectedCells += draw.line(char, startPoint, topRightPoint, true); // Top side
-      affectedCells += draw.line(char, topRightPoint, endPoint, true); // Right side
-      affectedCells += draw.line(char, endPoint, bottomLeftPoint, true); // Bottom side
-      affectedCells += draw.line(char, bottomLeftPoint, startPoint, true); // Left side
+    affectedCells.push(select.line(startPoint, topRightPoint)); // Top side
+    affectedCells.push(select.line(topRightPoint, endPoint)); // Right side
+    affectedCells.push(select.line(endPoint, bottomLeftPoint)); // Bottom side
+    affectedCells.push(select.line(bottomLeftPoint, startPoint)); // Left side
 
-      return affectedCells;
-    } else {
-      draw.line(char, startPoint, topRightPoint); // Top side
-      draw.line(char, topRightPoint, endPoint); // Right side
-      draw.line(char, endPoint, bottomLeftPoint); // Bottom side
-      draw.line(char, bottomLeftPoint, startPoint); // Left side
-    }
+    return affectedCells;
   },
 
   /**
-   * Fills a rectangular box on the game field with a specified character.
-   * Optionally returns the modified cells as an array of cell objects.
-   * @param {string} char - The character to fill the box with.
+   * Selects a rectangular box on the game field.
    * @param {Object} startPoint - The starting point of the box.
    * @param {number} startPoint.x - The x-coordinate of the starting point.
    * @param {number} startPoint.y - The y-coordinate of the starting point.
    * @param {Object} endPoint - The ending point of the box.
    * @param {number} endPoint.x - The x-coordinate of the ending point.
    * @param {number} endPoint.y - The y-coordinate of the ending point.
-   * @param {boolean} [returnCells=true] - Optional. Specifies whether to return the modified cells as an array.
    * @return {Array<Object>} - An array of modified cell objects if returnCells is true, otherwise undefined.
    */
-  square: function (char, startPoint, endPoint, returnCells = false) {
+  square: function (startPoint, endPoint) {
     const startPointCPY = Object.assign({}, startPoint);
     const endPointCPY = Object.assign({}, endPoint);
 
@@ -336,14 +271,12 @@ const draw = {
 
     for (let j = startPointCPY.y; j <= endPointCPY.y; j++) {
       for (let i = startPointCPY.x; i <= endPointCPY.x; i++) {
-        const cell = field.setCellContent(char, { x: i, y: j }, true); // Capture the returned cellData object
-        modifiedCells.push(cell); // Add the cellData object to the modifiedCells array
+        const cell = field.getCell({ x: i, y: j }).element; // Capture the returned cellData object.
+        modifiedCells.push(cell); // Add the cellData object to the modifiedCells array.
       }
     }
 
-    if (returnCells) {
-      return modifiedCells; // Return the array of modified cellData objects
-    }
+    return modifiedCells; // Return the array of selected cell elements.
   },
 };
 
