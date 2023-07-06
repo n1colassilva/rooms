@@ -86,12 +86,17 @@ const field = {
       // puts cell on grid
       this.element.appendChild(cell);
 
-      cell.addEventListener("click", (event) => {
+      const clickHandler = (event) => {
+        // Unsubscribe the click event listener
+        field.clickRegistry.unsubscribe("click", clickHandler);
+
         // grab the element itself
         const clickedCell = event.target;
 
-        this.clickRegistry.publish("click", clickedCell);
-      });
+        this.clickRegistry.publish("click", clickedCell.cellData);
+      };
+
+      cell.addEventListener("click", clickHandler);
     };
 
     for (let row = 0; row <= this.rows; row++) {
@@ -128,10 +133,25 @@ const field = {
    * @return {object} Optionally return the celldata of the desired cell
    */
   setCellContent: function (char, position, returnCell = false) {
-    const x = position.x;
-    const y = position.y;
+    let x;
+    let y;
 
-    // Select the cell element based on the provided coordinates
+    // Check if the position parameter is celldata or DOM element
+    if (
+      typeof position === "object" &&
+      position.hasOwnProperty("x") &&
+      position.hasOwnProperty("y")
+    ) {
+      // Extract x and y from celldata
+      x = position.x;
+      y = position.y;
+    } else {
+      // Assume position is a DOM element and retrieve x and y from its celldata
+      x = parseInt(position.dataset.x);
+      y = parseInt(position.dataset.y);
+    }
+
+    // Select the cell element based on the extracted coordinates
     const cellElement = this.element.querySelector(
       `[data-x="${x}"][data-y="${y}"]`
     );
@@ -140,18 +160,34 @@ const field = {
       throw new Error("Invalid cell position");
     }
 
-    cellElement.textContent = char;
+    cellElement.textContent = char[0];
 
-    if (returnCell == true) {
+    if (returnCell === true) {
       return cellElement;
     }
   },
 };
 
+/**
+ * Interface for selecting cells
+ */
 const select = {
   /**
-   * Draws a line on the game field between the start and end points,
-   * and returns the modified cells as an array of objects if specified.
+   * Selects a single cell, or a point, whatever you want to call it
+   *
+   * @param {object} point - Any object that cointains:
+   * @param {number} point.x - x coordinate
+   * @param {number} point.y - y coordinate
+   * @return {object} - CellData object
+   */
+  point: function (point) {
+    cell = field.getCell(point);
+    return cell;
+  },
+
+  /**
+   * selects a line on the game field between the start and end points,
+   * and returns the cells as an array of objects.
    * Useful for graphics, gameplay, etc.
    *
    * @param {Object} startPoint - The starting point of the line.
@@ -160,7 +196,7 @@ const select = {
    * @param {Object} endPoint - The ending point of the line.
    * @param {number} endPoint.x - The x-coordinate of the ending point.
    * @param {number} endPoint.y - The y-coordinate of the ending point.
-   * @return {Array|null} An array of objects representing the chosen cells
+   * @return {Array|null} An array of cellData objects representing the chosen cells
    */
   line: function (startPoint, endPoint) {
     let affectedCells;
@@ -193,14 +229,14 @@ const select = {
   },
 
   /**
-   * Draws a square on the field using the provided character.
+   * selects a square on the field.
    * @param {Object} startPoint - The top-left point of the square.
    * @param {number} startPoint.x - The x-coordinate of the top-left point.
    * @param {number} startPoint.y - The y-coordinate of the top-left point.
    * @param {Object} endPoint - The bottom-right point of the square.
    * @param {number} endPoint.x - The x-coordinate of the bottom-right point.
    * @param {number} endPoint.y - The y-coordinate of the bottom-right point.
-   * @return {Array|null} Array of objects affected
+   * @return {Array|null} Array of cellData objects affected
    */
   square: function (startPoint, endPoint) {
     const affectedCells = [];
@@ -218,7 +254,7 @@ const select = {
      * Epic square reference
      *    startPoint.x, startPoint.y___startPoint.x, endPoint.y
      *    		|							|
-     *    	   	|							|
+     *    	  |							|
      *    		|							|
      *    endPoint.x, startPoint.y___endPoint.x, endPoint.y
      */
@@ -243,9 +279,9 @@ const select = {
    * @param {Object} endPoint - The ending point of the box.
    * @param {number} endPoint.x - The x-coordinate of the ending point.
    * @param {number} endPoint.y - The y-coordinate of the ending point.
-   * @return {Array<Object>} - An array of modified cell objects if returnCells is true, otherwise undefined.
+   * @return {Array<Object>} - An array of modified cellData objects if returnCells is true, otherwise undefined.
    */
-  square: function (startPoint, endPoint) {
+  filledSquare: function (startPoint, endPoint) {
     const startPointCPY = Object.assign({}, startPoint);
     const endPointCPY = Object.assign({}, endPoint);
 
@@ -277,6 +313,101 @@ const select = {
     }
 
     return modifiedCells; // Return the array of selected cell elements.
+  },
+};
+
+/**
+ * Interface for drawing on the field using the select interface and an internal function
+ * separated from select to allow reuse of that code for other stuff, like invisible walls
+ */
+const draw = {
+  /**
+   * Internal helper method to loop through and modify coordinates in the grid.
+   * @param {Array} cells - Array of objects with `x` and `y` properties.
+   * @param {string} char - The character to modify the coordinates with.
+   */
+  _setCellsContent: function (cells, char) {
+    cells.forEach((cell) => {
+      const { x, y } = cell;
+      field.setCellContent(char, { x, y });
+    });
+  },
+
+  /**
+   * Draws a point on the field at the specified coordinates using the provided character.
+   *
+   * @param {object} point - An object that contains `x` and `y` properties representing the coordinates.
+   * @param {char} char - The character used to draw the point.
+   * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cell.
+   *                                         Defaults to `false`. Here in case you want to do more to it
+   * @return {object} The affected cell object, if `shouldReturn` is `true`.
+   */
+  point: (point, char, shouldReturn = false) => {
+    cell = select.point(point);
+    field.setCellContent(char);
+    if (shouldReturn) {
+      return cell;
+    }
+  },
+
+  /**
+   * Draws a line on the field at the specified coordinates using the provided character.
+   *
+   * @param {object} startPoint - An object that contains `x` and `y` properties
+   *                              representing the coordinates for the start of the line.
+   * @param {object} endPoint - An object that contains `x` and `y` properties
+   *                            representing the coordinates for the end of the line.
+   * @param {char} char - The character used to draw the line.
+   * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cells.
+   *                                         Defaults to `false`. Here in case you want to do more to it
+   * @return {object} The affected cell object, if `shouldReturn` is `true`.
+   */
+  line: (startPoint, endPoint, char, shouldReturn = false) => {
+    selectedLine = select.line(startPoint, endPoint);
+    draw._setCellsContent(selectedLine, char);
+    if (shouldReturn) {
+      return cells;
+    }
+  },
+
+  /**
+   * Draws a square on the field at the specified coordinates using the provided character.
+   *
+   * @param {object} startPoint - An object that contains `x` and `y` properties
+   *                              representing the coordinates for the start of the square.
+   * @param {object} endPoint - An object that contains `x` and `y` properties
+   *                            representing the coordinates for the end of the square.
+   * @param {char} char - The character used to draw the line.
+   * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cells.
+   *                                         Defaults to `false`. Here in case you want to do more to it
+   * @return {object} The affected cells array, if `shouldReturn` is `true`.
+   */
+  square: (startPoint, endPoint, char, shouldReturn = false) => {
+    selectedSquare = select.square(startPoint, endPoint);
+    draw._setCellsContent(selectedSquare, char);
+    if (shouldReturn) {
+      return cells;
+    }
+  },
+
+  /**
+   * Draws a filled square on the field at the specified coordinates using the provided character.
+   *
+   * @param {object} startPoint - An object that contains `x` and `y` properties
+   *                              representing the coordinates for the start of the square.
+   * @param {object} endPoint - An object that contains `x` and `y` properties
+   *                            representing the coordinates for the end of the square.
+   * @param {char} char - The character used to draw the line.
+   * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cells.
+   *                                         Defaults to `false`. Here in case you want to do more to it
+   * @return {object} The affected cells array, if `shouldReturn` is `true`.
+   */
+  filledSquare: (startPoint, endPoint, char, shouldReturn = false) => {
+    selectedFilledSquare = select.filledSquare(startPoint, endPoint);
+    draw._setCellsContent(selectedFilledSquare, char);
+    if (shouldReturn) {
+      return cells;
+    }
   },
 };
 

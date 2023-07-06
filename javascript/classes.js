@@ -103,6 +103,20 @@ class EventRegistry {
     // Add the callback function to the subscribers array for the event
     this.subscribers[event].push(callback);
   }
+  /**
+   * Unsubscribe from an event.
+   *
+   * @param {string} event - Name of the event.
+   * @param {Function} callback - Callback function to unsubscribe.
+   * @return {void}
+   */
+  unsubscribe(event, callback) {
+    if (this.subscribers[event]) {
+      this.subscribers[event] = this.subscribers[event].filter(
+        (subscriber) => subscriber !== callback
+      );
+    }
+  }
 
   /**
    * Method to publish an event
