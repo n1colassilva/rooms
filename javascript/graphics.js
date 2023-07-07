@@ -206,7 +206,7 @@ const select = {
    * @return {Array|null} An array of cellData objects representing the chosen cells
    */
   line: function (startPoint, endPoint) {
-    let affectedCells;
+    const affectedCells = [];
 
     const dx = Math.abs(endPoint.x - startPoint.x);
     const dy = Math.abs(endPoint.y - startPoint.y);
@@ -351,7 +351,7 @@ const draw = {
    */
   point: (point, char, shouldReturn = false) => {
     cell = select.point(point);
-    field.setCellContent(char);
+    field.setCellContent(char, point);
     if (shouldReturn) {
       return cell;
     }

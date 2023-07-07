@@ -11,34 +11,41 @@ editor = {
   make: {
     // just a dot, a single cell
     dot: async function () {
-      const point = await editor.listenForCellClick(); // Gets the cell that was clicked
-      console.log("Clicked Cell:", point);
-
-      await editor._editCell(inputUtil.arrayer(point)); // since `_editCell` only recieves array we use the arrayer₢
+      const point = await editor.listenForCellClick();
+      const char = prompt("Enter the character to draw:");
+      if (char) {
+        draw.point(point, char);
+      }
     },
 
     // goes from A to B
     line: async function () {
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
-      const lineArray = select.line(point1, point2);
-      editor._editCell(lineArray);
+      const char = prompt("Enter the character to draw:");
+      if (char) {
+        draw.line(point1, point2, char);
+      }
     },
 
     // its the one that is filled
     square: async function () {
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
-      const squareArray = select.square(point1, point2);
-      editor._editCell(squareArray);
+      const char = prompt("Enter the character to draw:");
+      if (char) {
+        draw.filledSquare(point1, point2, char);
+      }
     },
 
     // this one is empty inside
     filledSquare: async function () {
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
-      const filledSquareArray = select.filledSquare(point1, point2);
-      editor._editCell(filledSquareArray);
+      const char = prompt("Enter the character to draw:");
+      if (char) {
+        draw.square(point1, point2, char);
+      }
     },
   },
 
