@@ -49,11 +49,10 @@ editor = {
   listenForCellClick: async function () {
     return new Promise((resolve) => {
       const clickHandler = (event) => {
-        const clickedCell = event.target;
+        const clickedCell = event;
         // Unsubscribe the click event listener
         field.clickRegistry.unsubscribe("click", clickHandler);
-
-        resolve(clickedCell.cellData);
+        resolve(clickedCell);
       };
 
       field.clickRegistry.subscribe("click", clickHandler);
@@ -70,6 +69,7 @@ editor = {
 
     // Step 1: Make the cells editable
     cells.forEach((cell) => {
+      console.log("Cell:", cell);
       cell.contentEditable = "true";
     });
 

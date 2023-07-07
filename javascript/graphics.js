@@ -45,6 +45,12 @@ const field = {
    */
   startField: function () {
     this.cellMatrix = new CenteredMatrix(this.columns, this.rows);
+
+    /**
+     * Registry of what cells were clicked.
+     *
+     * Publishes the celldata!
+     */
     this.clickRegistry = new EventRegistry();
     /**
      * Populates the game field with cells.
@@ -88,11 +94,12 @@ const field = {
 
       const clickHandler = (event) => {
         // Unsubscribe the click event listener
-        field.clickRegistry.unsubscribe("click", clickHandler);
+        // field.clickRegistry.unsubscribe("click", clickHandler);
 
         // grab the element itself
         const clickedCell = event.target;
 
+        // publishes the CELLDATA
         this.clickRegistry.publish("click", clickedCell.cellData);
       };
 
