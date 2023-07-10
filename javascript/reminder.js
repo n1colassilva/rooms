@@ -30,5 +30,5 @@
  * The focus is on simplicity and ease of use, with more advanced features and customization options planned for future iterations.
  * The tool belt will serve as a valuable tool for editing the game world and enhancing the overall gameplay experience.
  *
- * Keep in mind that this is just a rough draft, and further improvements and refinements can be made based on
+ * Keep in mind that this is just a rough draft, and further improvements and refinements should  be made based on
  */

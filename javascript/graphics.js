@@ -87,7 +87,7 @@ const field = {
       };
 
       // adds cell to appropriate matrix position
-      this.cellMatrix.set(adjustedX, adjustedY, cell);
+      this.cellMatrix.set(adjustedX, adjustedY, cell.cellData);
 
       // puts cell on grid
       this.element.appendChild(cell);
