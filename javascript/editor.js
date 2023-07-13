@@ -113,4 +113,32 @@ editor = {
       });
     }
   },
+
+  /**
+   * Saves the current field matrix of cellDatae
+   * into a JSON file
+   */
+  save: () => {
+    const copyMatrix = [];
+    const originalMatrix = field.cellMatrix.matrix;
+    console.log(originalMatrix);
+
+    originalMatrix.forEach((row, rowIndex) => {
+      copyMatrix[rowIndex] = []; // Initialize the row in the copyMatrix
+
+      row.forEach((element, columnIndex) => {
+        copyMatrix[rowIndex][columnIndex] = JSON.parse(
+          JSON.stringify(originalMatrix[rowIndex][columnIndex])
+        );
+        copyMatrix[rowIndex][columnIndex].element = null;
+      });
+    });
+
+    const filename = prompt("Enter a filename for the JSON file:");
+    if (filename) {
+      downloadJSON(copyMatrix, filename + ".json");
+    } else {
+      alert("Filename cannot be empty. Save cancelled.");
+    }
+  },
 };

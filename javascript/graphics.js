@@ -83,7 +83,7 @@ const field = {
         set char(value) {
           cell.textContent = value;
         },
-        element: cell,
+        // element: cell,
       };
 
       // adds cell to appropriate matrix position
@@ -116,9 +116,9 @@ const field = {
   /**
    * Returns cellData object from cell dom object from desired cell
    * @param {object} coordinates coordinates object
-   * @param {number} coordinates.x x coordinate of desired cell
-   * @param {number} coordinates.y y coordinate of desired cell
-   * @return {object} cell returns the cellData object found in cell dom object
+   * @param {number} coordinates.x - x coordinate of desired cell
+   * @param {number} coordinates.y - y coordinate of desired cell
+   * @return {object} - cell returns the cellData object found in cell dom object
    */
   getCell: function (coordinates) {
     // Select the cell element based on the provided coordinates
@@ -159,18 +159,16 @@ const field = {
     }
 
     // Select the cell element based on the extracted coordinates
-    const cellElement = this.element.querySelector(
-      `[data-x="${x}"][data-y="${y}"]`
-    );
+    const cellData = field.getCell({ x: x, y: y });
 
-    if (!cellElement) {
+    if (!cellData) {
       throw new Error("Invalid cell position");
     }
 
-    cellElement.textContent = char[0];
+    cellData.char = char[0];
 
     if (returnCell === true) {
-      return cellElement;
+      return cellData;
     }
   },
 };
