@@ -126,7 +126,6 @@ const field = {
     const cell = field.element.querySelector(
       `[data-x="${coordinates.x}"][data-y="${coordinates.y}"]`
     ).cellData;
-
     return cell;
   },
 
@@ -268,10 +267,10 @@ const select = {
     const topRightPoint = field.getCell({ x: endPoint.x, y: startPoint.y });
     const bottomLeftPoint = field.getCell({ x: startPoint.x, y: endPoint.y });
 
-    affectedCells.push(select.line(startPoint, topRightPoint)); // Top side
-    affectedCells.push(select.line(topRightPoint, endPoint)); // Right side
-    affectedCells.push(select.line(endPoint, bottomLeftPoint)); // Bottom side
-    affectedCells.push(select.line(bottomLeftPoint, startPoint)); // Left side
+    affectedCells.push(...select.line(startPoint, topRightPoint)); // Top side
+    affectedCells.push(...select.line(topRightPoint, endPoint)); // Right side
+    affectedCells.push(...select.line(endPoint, bottomLeftPoint)); // Bottom side
+    affectedCells.push(...select.line(bottomLeftPoint, startPoint)); // Left side
 
     return affectedCells;
   },
@@ -312,12 +311,17 @@ const select = {
 
     for (let j = startPointCPY.y; j <= endPointCPY.y; j++) {
       for (let i = startPointCPY.x; i <= endPointCPY.x; i++) {
-        const cell = field.getCell({ x: i, y: j }).element; // Capture the returned cellData object.
+        const cell = field.getCell({ x: i, y: j }); // Capture the returned cellData object.
         modifiedCells.push(cell); // Add the cellData object to the modifiedCells array.
       }
     }
 
-    return modifiedCells; // Return the array of selected cell elements.
+    // Set the char property of the modified cells to the desired character
+    modifiedCells.forEach((cell) => {
+      cell.char = field.selectedChar;
+    });
+
+    return modifiedCells; // Return the array of modified cellData objects.
   },
 };
 

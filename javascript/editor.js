@@ -34,7 +34,7 @@ editor = {
       const point2 = await editor.listenForCellClick();
       const char = prompt("Enter the character to draw:");
       if (char) {
-        draw.filledSquare(point1, point2, char);
+        draw.square(point1, point2, char);
       }
     },
 
@@ -44,7 +44,7 @@ editor = {
       const point2 = await editor.listenForCellClick();
       const char = prompt("Enter the character to draw:");
       if (char) {
-        draw.square(point1, point2, char);
+        draw.filledSquare(point1, point2, char);
       }
     },
   },
@@ -72,11 +72,8 @@ editor = {
    * @param {Array} cells  - Array of cells to be modified
    */
   _editCell: (cells) => {
-    console.log("Cells:", cells);
-
     // Step 1: Make the cells editable
     cells.forEach((cell) => {
-      console.log("Cell:", cell);
       cell.contentEditable = "true";
     });
 
@@ -121,7 +118,6 @@ editor = {
   save: () => {
     const copyMatrix = [];
     const originalMatrix = field.cellMatrix.matrix;
-    console.log(originalMatrix);
 
     originalMatrix.forEach((row, rowIndex) => {
       copyMatrix[rowIndex] = []; // Initialize the row in the copyMatrix
