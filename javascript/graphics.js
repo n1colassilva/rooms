@@ -245,22 +245,25 @@ const select = {
   square: function (startPoint, endPoint) {
     const affectedCells = [];
 
+    const startPointCPY = Object.assign({}, startPoint);
+    const endPointCPY = Object.assign({}, endPoint);
+
     // Make the startPoint be the top left and endPoint be the bottom right
-    if (endPoint.x < startPoint.x) {
-      [startPoint.x, endPoint.x] = [endPoint.x, startPoint.x]; // Switch them around
+    if (endPointCPY.x < startPointCPY.x) {
+      [startPointCPY.x, endPointCPY.x] = [endPointCPY.x, startPointCPY.x]; // Switch them around
     }
 
-    if (endPoint.y < startPoint.y) {
-      [startPoint.y, endPoint.y] = [endPoint.y, startPoint.y]; // Switch them around
+    if (endPointCPY.y < startPointCPY.y) {
+      [startPointCPY.y, endPointCPY.y] = [endPointCPY.y, startPointCPY.y]; // Switch them around
     }
 
     /**
      * Epic square reference
-     *    startPoint.x, startPoint.y___startPoint.x, endPoint.y
-     *    		|							|
-     *    	  |							|
-     *    		|							|
-     *    endPoint.x, startPoint.y___endPoint.x, endPoint.y
+     *    startPoint.x, startPoint.y---startPoint.x, endPoint.y
+     *    		|						                    	|
+     *    	  |							                    |
+     *    		|							                    |
+     *    endPoint.x, startPoint.y---endPoint.x, endPoint.y
      */
 
     // Create coordinates for the other two points
