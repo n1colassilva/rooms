@@ -83,11 +83,11 @@ const field = {
         set char(value) {
           cell.textContent = value;
         },
-        element: cell,
+        // element: cell,
       };
 
       // adds cell to appropriate matrix position
-      this.cellMatrix.set(adjustedX, adjustedY, cell);
+      this.cellMatrix.set(adjustedX, adjustedY, cell.cellData);
 
       // puts cell on grid
       this.element.appendChild(cell);
@@ -116,9 +116,9 @@ const field = {
   /**
    * Returns cellData object from cell dom object from desired cell
    * @param {object} coordinates coordinates object
-   * @param {number} coordinates.x x coordinate of desired cell
-   * @param {number} coordinates.y y coordinate of desired cell
-   * @return {object} cell returns the cellData object found in cell dom object
+   * @param {number} coordinates.x - x coordinate of desired cell
+   * @param {number} coordinates.y - y coordinate of desired cell
+   * @return {object} - cell returns the cellData object found in cell dom object
    */
   getCell: function (coordinates) {
     // Select the cell element based on the provided coordinates
@@ -126,7 +126,6 @@ const field = {
     const cell = field.element.querySelector(
       `[data-x="${coordinates.x}"][data-y="${coordinates.y}"]`
     ).cellData;
-
     return cell;
   },
 
@@ -159,18 +158,16 @@ const field = {
     }
 
     // Select the cell element based on the extracted coordinates
-    const cellElement = this.element.querySelector(
-      `[data-x="${x}"][data-y="${y}"]`
-    );
+    const cellData = field.getCell({ x: x, y: y });
 
-    if (!cellElement) {
+    if (!cellData) {
       throw new Error("Invalid cell position");
     }
 
-    cellElement.textContent = char[0];
+    cellData.char = char[0];
 
     if (returnCell === true) {
-      return cellElement;
+      return cellData;
     }
   },
 };
@@ -248,32 +245,35 @@ const select = {
   square: function (startPoint, endPoint) {
     const affectedCells = [];
 
+    const startPointCPY = Object.assign({}, startPoint);
+    const endPointCPY = Object.assign({}, endPoint);
+
     // Make the startPoint be the top left and endPoint be the bottom right
-    if (endPoint.x < startPoint.x) {
-      [startPoint.x, endPoint.x] = [endPoint.x, startPoint.x]; // Switch them around
+    if (endPointCPY.x < startPointCPY.x) {
+      [startPointCPY.x, endPointCPY.x] = [endPointCPY.x, startPointCPY.x]; // Switch them around
     }
 
-    if (endPoint.y < startPoint.y) {
-      [startPoint.y, endPoint.y] = [endPoint.y, startPoint.y]; // Switch them around
+    if (endPointCPY.y < startPointCPY.y) {
+      [startPointCPY.y, endPointCPY.y] = [endPointCPY.y, startPointCPY.y]; // Switch them around
     }
 
     /**
      * Epic square reference
-     *    startPoint.x, startPoint.y___startPoint.x, endPoint.y
-     *    		|							|
-     *    	  |							|
-     *    		|							|
-     *    endPoint.x, startPoint.y___endPoint.x, endPoint.y
+     *    startPoint.x, startPoint.y---startPoint.x, endPoint.y
+     *    		|						                    	|
+     *    	  |							                    |
+     *    		|							                    |
+     *    endPoint.x, startPoint.y---endPoint.x, endPoint.y
      */
 
     // Create coordinates for the other two points
     const topRightPoint = field.getCell({ x: endPoint.x, y: startPoint.y });
     const bottomLeftPoint = field.getCell({ x: startPoint.x, y: endPoint.y });
 
-    affectedCells.push(select.line(startPoint, topRightPoint)); // Top side
-    affectedCells.push(select.line(topRightPoint, endPoint)); // Right side
-    affectedCells.push(select.line(endPoint, bottomLeftPoint)); // Bottom side
-    affectedCells.push(select.line(bottomLeftPoint, startPoint)); // Left side
+    affectedCells.push(...select.line(startPoint, topRightPoint)); // Top side
+    affectedCells.push(...select.line(topRightPoint, endPoint)); // Right side
+    affectedCells.push(...select.line(endPoint, bottomLeftPoint)); // Bottom side
+    affectedCells.push(...select.line(bottomLeftPoint, startPoint)); // Left side
 
     return affectedCells;
   },
@@ -314,12 +314,17 @@ const select = {
 
     for (let j = startPointCPY.y; j <= endPointCPY.y; j++) {
       for (let i = startPointCPY.x; i <= endPointCPY.x; i++) {
-        const cell = field.getCell({ x: i, y: j }).element; // Capture the returned cellData object.
+        const cell = field.getCell({ x: i, y: j }); // Capture the returned cellData object.
         modifiedCells.push(cell); // Add the cellData object to the modifiedCells array.
       }
     }
 
-    return modifiedCells; // Return the array of selected cell elements.
+    // Set the char property of the modified cells to the desired character
+    modifiedCells.forEach((cell) => {
+      cell.char = field.selectedChar;
+    });
+
+    return modifiedCells; // Return the array of modified cellData objects.
   },
 };
 

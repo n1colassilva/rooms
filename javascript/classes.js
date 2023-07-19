@@ -1,11 +1,22 @@
 /**
- * This file contains several classes used throughout the app
+ * This file contains several classes and other stuffs used throughout the app
  *
  * These are grouped together because they are intended to be reused and expanded
  * where necessary
  *
  * TODO: Eslint will complain about the classes not being used and i should do something about it
  * ? Maybe make eslint read all files as one
+ */
+
+// Define the custom CellData type
+/**
+ * Represents data associated with a cell element.
+ *
+ * @typedef {Object} CellData
+ * @property {number} x - The x-coordinate of the cell.
+ * @property {number} y - The y-coordinate of the cell.
+ * @property {string} char - The character content of the cell.
+ * @property {function(string): void} setChar - Sets the character content of the cell.
  */
 
 /**

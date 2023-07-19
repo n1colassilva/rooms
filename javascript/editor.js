@@ -11,6 +11,9 @@ editor = {
   make: {
     // just a dot, a single cell
     dot: async function () {
+      if (editor.enable == false) {
+        return alert("Editor not enabled");
+      }
       const point = await editor.listenForCellClick();
       const char = prompt("Enter the character to draw:");
       if (char) {
@@ -20,6 +23,9 @@ editor = {
 
     // goes from A to B
     line: async function () {
+      if (editor.enable == false) {
+        return alert("Editor not enabled");
+      }
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
       const char = prompt("Enter the character to draw:");
@@ -30,21 +36,27 @@ editor = {
 
     // its the one that is filled
     square: async function () {
-      const point1 = await editor.listenForCellClick();
-      const point2 = await editor.listenForCellClick();
-      const char = prompt("Enter the character to draw:");
-      if (char) {
-        draw.filledSquare(point1, point2, char);
+      if (editor.enable == false) {
+        return alert("Editor not enabled");
       }
-    },
-
-    // this one is empty inside
-    filledSquare: async function () {
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
       const char = prompt("Enter the character to draw:");
       if (char) {
         draw.square(point1, point2, char);
+      }
+    },
+
+    // this one is empty inside
+    filledSquare: async function () {
+      if (editor.enable == false) {
+        return alert("Editor not enabled");
+      }
+      const point1 = await editor.listenForCellClick();
+      const point2 = await editor.listenForCellClick();
+      const char = prompt("Enter the character to draw:");
+      if (char) {
+        draw.filledSquare(point1, point2, char);
       }
     },
   },
@@ -72,11 +84,8 @@ editor = {
    * @param {Array} cells  - Array of cells to be modified
    */
   _editCell: (cells) => {
-    console.log("Cells:", cells);
-
     // Step 1: Make the cells editable
     cells.forEach((cell) => {
-      console.log("Cell:", cell);
       cell.contentEditable = "true";
     });
 
@@ -112,5 +121,52 @@ editor = {
         }
       });
     }
+  },
+
+  /**
+   * Saves the current field matrix of cellDatae
+   * into a JSON file
+   *
+   * If other places need a download function move this to classes.js
+   * and make this just call the function with whatever modifications needed
+   */
+  save: () => {
+    /**
+     * Downloads a JSON object as a file.
+     * Prompts the user to enter a filename and initiates the download.
+     *
+     * @param {Object} jsonContent - The JSON object to be downloaded.
+     */
+    function _downloadJSON(jsonContent) {
+      const jsonStr = JSON.stringify(jsonContent);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+
+      const filename = prompt("Enter a filename for the JSON file:");
+      if (filename) {
+        downloadLink.download = `${filename}.json`;
+        downloadLink.click();
+      } else {
+        alert("Filename cannot be empty. Save cancelled.");
+      }
+    }
+
+    const copyMatrix = [];
+    const originalMatrix = field.cellMatrix.matrix;
+
+    originalMatrix.forEach((row, rowIndex) => {
+      copyMatrix[rowIndex] = [];
+
+      row.forEach((element, columnIndex) => {
+        copyMatrix[rowIndex][columnIndex] = JSON.parse(
+          JSON.stringify(originalMatrix[rowIndex][columnIndex])
+        );
+        copyMatrix[rowIndex][columnIndex].element = null;
+      });
+    });
+
+    _downloadJSON(copyMatrix);
   },
 };
