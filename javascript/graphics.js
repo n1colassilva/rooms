@@ -5,6 +5,22 @@
  * And finally handling drawing on the field
  */
 
+/**
+ * A lot will be done using this Celldata object instead of the element, this is done to simplify and avoid access
+ * to things we dont need accessed
+ *
+ * The intention is basically to just hide the html wizardry
+ */
+/**
+ * Represents data associated with a cell element.
+ *
+ * @typedef {Object} CellData
+ * @property {number} x - The x-coordinate of the cell.
+ * @property {number} y - The y-coordinate of the cell.
+ * @property {string} char - The character content of the cell.
+ * @property {function(string): void} setChar - Sets the character content of the cell.
+ */
+
 const field = {
   /**
    * The DOM element representing the game field.
@@ -118,7 +134,7 @@ const field = {
    * @param {object} coordinates coordinates object
    * @param {number} coordinates.x - x coordinate of desired cell
    * @param {number} coordinates.y - y coordinate of desired cell
-   * @return {object} - cell returns the cellData object found in cell dom object
+   * @return {CellData} - cell returns the cellData object found in cell dom object
    */
   getCell: function (coordinates) {
     // Select the cell element based on the provided coordinates
@@ -136,7 +152,7 @@ const field = {
    * @param {int} position.x x value of position
    * @param {int} position.y y value of position
    * @param {boolean} [returnCell=false] - Determines whether to return the modified cells.
-   * @return {object} Optionally return the celldata of the desired cell
+   * @return {CellData} Optionally return the celldata of the desired cell
    */
   setCellContent: function (char, position, returnCell = false) {
     let x;
@@ -182,7 +198,7 @@ const select = {
    * @param {object} point - Any object that cointains:
    * @param {number} point.x - x coordinate
    * @param {number} point.y - y coordinate
-   * @return {object} - CellData object
+   * @return {CellData} - CellData object
    */
   point: function (point) {
     cell = field.getCell(point);
@@ -200,7 +216,7 @@ const select = {
    * @param {Object} endPoint - The ending point of the line.
    * @param {number} endPoint.x - The x-coordinate of the ending point.
    * @param {number} endPoint.y - The y-coordinate of the ending point.
-   * @return {Array|null} An array of cellData objects representing the chosen cells
+   * @return {Array|CellData} An array of cellData objects representing the chosen cells
    */
   line: function (startPoint, endPoint) {
     const affectedCells = [];
@@ -240,7 +256,7 @@ const select = {
    * @param {Object} endPoint - The bottom-right point of the square.
    * @param {number} endPoint.x - The x-coordinate of the bottom-right point.
    * @param {number} endPoint.y - The y-coordinate of the bottom-right point.
-   * @return {Array|null} Array of cellData objects affected
+   * @return {Array|CellData} Array of cellData objects affected
    */
   square: function (startPoint, endPoint) {
     const affectedCells = [];
@@ -286,7 +302,7 @@ const select = {
    * @param {Object} endPoint - The ending point of the box.
    * @param {number} endPoint.x - The x-coordinate of the ending point.
    * @param {number} endPoint.y - The y-coordinate of the ending point.
-   * @return {Array<Object>} - An array of modified cellData objects if returnCells is true, otherwise undefined.
+   * @return {Array<CellData>} - An array of modified cellData objects if returnCells is true, otherwise undefined.
    */
   filledSquare: function (startPoint, endPoint) {
     const startPointCPY = Object.assign({}, startPoint);
@@ -352,7 +368,7 @@ const draw = {
    * @param {char} char - The character used to draw the point.
    * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cell.
    *                                         Defaults to `false`. Here in case you want to do more to it
-   * @return {object} The affected cell object, if `shouldReturn` is `true`.
+   * @return {CellData} The affected cell object, if `shouldReturn` is `true`.
    */
   point: (point, char, shouldReturn = false) => {
     cell = select.point(point);
@@ -372,7 +388,7 @@ const draw = {
    * @param {char} char - The character used to draw the line.
    * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cells.
    *                                         Defaults to `false`. Here in case you want to do more to it
-   * @return {object} The affected cell object, if `shouldReturn` is `true`.
+   * @return {CellData} The affected cell object, if `shouldReturn` is `true`.
    */
   line: (startPoint, endPoint, char, shouldReturn = false) => {
     selectedLine = select.line(startPoint, endPoint);
@@ -392,7 +408,7 @@ const draw = {
    * @param {char} char - The character used to draw the line.
    * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cells.
    *                                         Defaults to `false`. Here in case you want to do more to it
-   * @return {object} The affected cells array, if `shouldReturn` is `true`.
+   * @return {Array<CellData>} The affected cells array, if `shouldReturn` is `true`.
    */
   square: (startPoint, endPoint, char, shouldReturn = false) => {
     selectedSquare = select.square(startPoint, endPoint);
@@ -412,7 +428,7 @@ const draw = {
    * @param {char} char - The character used to draw the line.
    * @param {boolean} [shouldReturn=false] - Optional. Specifies whether to return the affected cells.
    *                                         Defaults to `false`. Here in case you want to do more to it
-   * @return {object} The affected cells array, if `shouldReturn` is `true`.
+   * @return {Array<CellData>} The affected cells array, if `shouldReturn` is `true`.
    */
   filledSquare: (startPoint, endPoint, char, shouldReturn = false) => {
     selectedFilledSquare = select.filledSquare(startPoint, endPoint);
