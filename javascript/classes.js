@@ -20,6 +20,157 @@
  */
 
 /**
+ * The game field, now made to be reused!
+ */
+class Field {
+  /**
+   * Constructs a new Field instance.
+   * @param {number} columns - The number of columns in the field.
+   * @param {number} rows - The number of rows in the field.
+   */
+  constructor(columns, rows) {
+    this.element = document.getElementById("game-field");
+    this.focus = false;
+    this.columns = columns;
+    this.rows = rows;
+    this.cellMatrix = null;
+    this.clickRegistry = null;
+  }
+
+  /**
+   * Initializes the game field by populating it with cells.
+   * Each cell is represented by a span element with coordinates.
+   */
+  startField() {
+    this.cellMatrix = new CenteredMatrix(this.columns, this.rows);
+
+    /**
+     * Registry of what cells were clicked.
+     *
+     * Publishes the celldata!
+     */
+    this.clickRegistry = new EventRegistry();
+    /**
+     * Populates the game field with cells.
+     * Each cell is represented by a span element.
+     * @param {number} row - The row index of the cell.
+     * @param {number} column - The column index of the cell.
+     */
+    const createCell = (row, column) => {
+      const cell = document.createElement("span");
+      cell.classList.add("cell");
+      cell.textContent = " ";
+
+      // Calculate the adjusted x and y coordinates
+      const adjustedX = column - Math.floor(this.columns / 2) - 1;
+      const adjustedY = Math.floor(this.rows / 2) - row + 1;
+
+      cell.dataset.x = adjustedX;
+      cell.dataset.y = adjustedY;
+
+      // EPIC CELL DATA STUFF
+      // CHAPTER NAME: UNFORESEEN CONSEQUENCES
+      // 21/06/23 - this has actually been the best idea i had
+
+      cell.cellData = {
+        x: parseInt(cell.dataset.x),
+        y: parseInt(cell.dataset.y),
+        get char() {
+          return cell.textContent;
+        },
+        set char(value) {
+          cell.textContent = value;
+        },
+        // element: cell,
+      };
+
+      // adds cell to appropriate matrix position
+      this.cellMatrix.set(adjustedX, adjustedY, cell.cellData);
+
+      // puts cell on grid
+      this.element.appendChild(cell);
+
+      const clickHandler = (event) => {
+        // Unsubscribe the click event listener
+        // field.clickRegistry.unsubscribe("click", clickHandler);
+
+        // grab the element itself
+        const clickedCell = event.target;
+
+        // publishes the CELLDATA
+        this.clickRegistry.publish("click", clickedCell.cellData);
+      };
+
+      cell.addEventListener("click", clickHandler);
+    };
+
+    for (let row = 0; row <= this.rows; row++) {
+      for (let column = 0; column <= this.columns; column++) {
+        createCell.call(this, row + 1, column + 1);
+      }
+    }
+  }
+
+  /**
+   * Returns cellData object from cell dom object from desired cell
+   * @param {object} coordinates coordinates object
+   * @param {number} coordinates.x - x coordinate of desired cell
+   * @param {number} coordinates.y - y coordinate of desired cell
+   * @return {CellData} - cell returns the cellData object found in cell dom object
+   */
+  getCell(coordinates) {
+    // Select the cell element based on the provided coordinates
+    // Grabs the celldata defined at cell creation
+    const cell = field.element.querySelector(
+      `[data-x="${coordinates.x}"][data-y="${coordinates.y}"]`
+    ).cellData;
+    return cell;
+  }
+
+  /**
+   * Simple function to set the content of a specific cell in the game field.
+   * @param {string} char The character to be displayed in the cell.
+   * @param {object} position
+   * @param {int} position.x x value of position
+   * @param {int} position.y y value of position
+   * @param {boolean} [returnCell=false] - Determines whether to return the modified cells.
+   * @return {CellData} Optionally return the celldata of the desired cell
+   */
+  setCellContent(char, position, returnCell = false) {
+    let x;
+    let y;
+
+    // Check if the position parameter is celldata or DOM element
+    if (
+      typeof position === "object" &&
+      position.hasOwnProperty("x") &&
+      position.hasOwnProperty("y")
+    ) {
+      // Extract x and y from celldata
+      x = position.x;
+      y = position.y;
+    } else {
+      // Assume position is a DOM element and retrieve x and y from its celldata
+      x = parseInt(position.dataset.x);
+      y = parseInt(position.dataset.y);
+    }
+
+    // Select the cell element based on the extracted coordinates
+    const cellData = field.getCell({ x: x, y: y });
+
+    if (!cellData) {
+      throw new Error("Invalid cell position");
+    }
+
+    cellData.char = char[0];
+
+    if (returnCell === true) {
+      return cellData;
+    }
+  }
+}
+
+/**
  * Represents a matrix with 0,0 as the center, allows negative values, must be pre defined
  */
 class CenteredMatrix {
