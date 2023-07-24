@@ -17,10 +17,21 @@ body {
 	background-color: var(--background);
 	color: white;
 	width: 100%;
+}
 
-	display: flex;
-	flex-flow: column;
+main {
+	background-color: var(--background);
+	color: white;
+	width: 100%;
+
+	display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-columns: 1fr;
 	align-items: center;
+}
+
+main > * {
+	grid-column: 2;
 }
 
 header {
@@ -30,10 +41,6 @@ header {
 	height: 4em;
 	padding: 1em;
 	font-size: 1.2em;
-}
-
-main {
-	line-height: 1em;
 }
 
 #game-field {
@@ -68,16 +75,23 @@ main {
 	height: 1em;
 }
 
+#editor-wrapper{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    grid-column: 1;
+    grid-row: 1;
+	padding: 10px;
+}
 
 #editor {
+	border-radius: 10%;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: absolute; 
-    left: 20px;
-    top: 20px; 
     background-color: var(--surface-0);
-    padding: 20px;
+    padding: 10px;
 }
 
 
