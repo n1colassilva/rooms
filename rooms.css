@@ -43,6 +43,11 @@ header {
 	font-size: 1.2em;
 }
 
+header > h1 , h2 {
+	font-weight: normal;
+	font-style: normal;
+}
+
 #game-field {
 	display: grid;
 	box-sizing: border-box;
@@ -77,6 +82,7 @@ header {
 
 #editor-wrapper{
     display: flex;
+	overflow: visible;
     justify-content: end;
     align-items: center;
     grid-column: 1;
@@ -85,7 +91,7 @@ header {
 }
 
 #editor {
-	border-radius: 10%;
+	border-radius: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -96,5 +102,32 @@ header {
 
 
 #editor button {
-    margin-bottom: 10px;
+	background-color: #ffffff00;	
+	border-style: none;
+	aspect-ratio: 1/1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	margin: 0px 2px;
+}
+
+#editor > :first-child {
+	margin-top: 2px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+}
+
+#editor > :last-child {
+	margin-bottom: 2px;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+}
+
+#editor > button > svg {
+	fill: white;
+}
+
+#editor > button :active  {
+	fill: rgb(177, 177, 177);
 }
