@@ -1,15 +1,18 @@
 const player = {
   playerChar: "█",
+
   position: {
     x: 0,
     y: 0,
     backgroundChar: "", // for when he moves away
   },
 
+  allowMovement: true, // flag to control movement
+
   setPosition: function (xPos, yPos) {
     const cell = field.getCell({ x: xPos, y: yPos }); // get cell data
     player.position.backgroundChar = cell.char; // save background char
-    field.setCellContent(player.playerChar, cell); // make the char be the player
+    field.setCellContent(player.playerChar, cell); // make the char be the player's
 
     // Update player's position
     player.position.x = xPos;
@@ -17,6 +20,11 @@ const player = {
   },
 
   move: function (direction) {
+    // Check if the player is hidden, and prevent movement if so
+    if (!player.allowMovement) {
+      return;
+    }
+
     /**
      * Moves player to determined position
      * @param {Int} x
@@ -147,14 +155,18 @@ const player = {
       }
     });
   },
-};
 
-field.element.addEventListener("keydown", function (event) {
-  if (event.key.startsWith("Arrow")) {
-    event.preventDefault();
-    // Handle game movement
-  }
-});
+  hide: () => {
+    player.allowMovement = false; // Set the flag to prevent movement
+    player.playerChar = "";
+    field.setCellContent("", player.position);
+  },
+
+  show: () => {
+    player.allowMovement = true; // Set the flag to allow movement again
+    player.playerChar = "█";
+  },
+};
 
 field.element.addEventListener("mousedown", function () {
   field.element.focus();

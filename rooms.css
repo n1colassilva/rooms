@@ -38,7 +38,6 @@ header {
 	width: 100%;
 	text-align: center;
 	background-color: var(--surface-0);
-	height: 4em;
 	padding: 1em;
 	font-size: 1.2em;
 }
@@ -48,6 +47,15 @@ header > h1 , h2 {
 	font-style: normal;
 }
 
+header > h1 {
+	font-size: 1.5em;
+}
+
+header > h2 {
+	margin-top: 20px;
+	font-size: smaller;
+}
+
 #game-field {
 	display: grid;
 	box-sizing: border-box;
@@ -55,20 +63,21 @@ header > h1 , h2 {
 	grid-template-columns: repeat(var(--columns), 1fr); /* Adjust the width of columns as needed */
 	grid-template-rows: repeat(var(--rows) 1ch); /* Adjust the number of rows and the height of rows as needed */
 	line-height: 1em; /* Remove spacing between rows */
-	gap: 0;
+	
+	gap: 0px;
 }
 
 #game-field:focus {
 	color: white;
 	outline: white;
 	outline-style: dotted;
-	outline-offset: 20px;
+	outline-offset: 1px;
 }
 
 #field-wrapper {
 	box-sizing: content-box;
-	margin: 20px;
-	padding: 20px;
+	margin: 30px;
+	/* padding: 20px; */
 
 	background-color: black;
 	color: white;
@@ -76,7 +85,7 @@ header > h1 , h2 {
 
 .cell {
 	display: inline-block;
-	width: 1ch;
+	width: 0.9ch;
 	height: 1em;
 }
 
