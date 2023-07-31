@@ -169,4 +169,26 @@ editor = {
 
     _downloadJSON(copyMatrix);
   },
+  load: () => {
+    fetch("Rooms_title_v0.json")
+      .then((response) => response.json())
+      .then((data) => {
+        // Here, the 'data' variable contains the parsed JSON object.
+        // Now you can use the data to rebuild your map.
+        // 2-dimensional array parser 2000
+        for (let row = 0; row < data.length; row++) {
+          for (let column = 0; column < data[row].length; column++) {
+            const loadedCell = data[row][column];
+            const realCell = field.getCell({
+              x: loadedCell.x,
+              y: loadedCell.y,
+            });
+            field.setCellContent(loadedCell.char, realCell);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching the JSON file:", error);
+      });
+  },
 };
