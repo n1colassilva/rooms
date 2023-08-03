@@ -188,16 +188,16 @@ editor = {
     _downloadJSON(saveData);
   },
   load: () => {
-    fetch("start_menu.json")
+    fetch("menu.json")
       .then((response) => response.json())
       .then((data) => {
         // Here, the 'data' variable contains the parsed JSON object.
         // Now you can use the data to rebuild your map.
         // 2-dimensional array parser 2000
         gameGrid = data.matrix;
-        for (let row = 0; row < gameGrid; row++) {
+        for (let row = 0; row < gameGrid.length; row++) {
           for (let column = 0; column < gameGrid[row].length; column++) {
-            const loadedCell = data[row][column];
+            const loadedCell = gameGrid[row][column];
             const realCell = field.getCell({
               x: loadedCell.x,
               y: loadedCell.y,
@@ -210,53 +210,51 @@ editor = {
         console.error("Error fetching the JSON file:", error);
       });
   },
-  tempfix: () => {
-    fetch("start_menu.json")
-      .then((response) => response.json())
-      .then((data) => {
-        /**
-         * @param {*} jsonContent
-         */
-        function _downloadJSON(jsonContent) {
-          const jsonStr = JSON.stringify(jsonContent);
-          const blob = new Blob([jsonStr], { type: "application/json" });
 
-          const downloadLink = document.createElement("a");
-          downloadLink.href = URL.createObjectURL(blob);
+  // tempFix: () => {
+  //   let copyMatrix = null;
 
-          const filename = prompt("Enter a filename for the JSON file:");
-          if (filename) {
-            downloadLink.download = `${filename}.json`;
-            downloadLink.click();
-          } else {
-            alert("Filename cannot be empty. Save cancelled.");
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching the JSON file:", error);
-      });
+  //   fetch("start_menu.json")
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // Save the game grid to include it in the map package
+  //       copyMatrix = data;
 
-    // Saving the game grid to include it map package
-    const copyMatrix = data;
+  //       // Continue with the rest of your code here...
+  //       const collisionGrid = {};
+  //       const playerStatus = {
+  //         movementAllow: player.allowMovement,
+  //         visibilityAllow: player.show,
+  //         spawn: null, // TODO: Figure this out
+  //       };
+  //       const saveData = {
+  //         matrix: copyMatrix,
+  //         collisionGrid: collisionGrid,
+  //         player: playerStatus,
+  //       };
 
-    // saving other miscellaneous data
+  //       // Function to download the JSON file
+  //       function _downloadJSON(jsonContent) {
+  //         const jsonStr = JSON.stringify(jsonContent);
+  //         const blob = new Blob([jsonStr], { type: "application/json" });
 
-    const collisionGrid = {};
+  //         const downloadLink = document.createElement("a");
+  //         downloadLink.href = URL.createObjectURL(blob);
 
-    // Load player data, could include more stuff later on
-    const playerStatus = {
-      movementAllow: player.allowMovement,
-      visibilityAllow: player.show,
-      spawn: null, // TODO: Figure this out
-    };
+  //         const filename = prompt("Enter a filename for the JSON file:");
+  //         if (filename) {
+  //           downloadLink.download = `${filename}.json`;
+  //           downloadLink.click();
+  //         } else {
+  //           alert("Filename cannot be empty. Save cancelled.");
+  //         }
+  //       }
 
-    // Filling out the save package (there's a better name but this one sounds cooler)
-    const saveData = {
-      matrix: copyMatrix,
-      collisionGrid: collisionGrid,
-      player: playerStatus,
-    };
-    _downloadJSON(saveData);
-  },
+  //       // Call the function to download the JSON file
+  //       _downloadJSON(saveData);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching the JSON file:", error);
+  //     });
+  // },
 };
