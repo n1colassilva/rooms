@@ -187,14 +187,30 @@ editor = {
     };
     _downloadJSON(saveData);
   },
+
   load: () => {
     fetch("menu.json")
       .then((response) => response.json())
-      .then((data) => {
+      .then((saveData) => {
+        /**
+         * Here the "saveData" is the save, duh
+         *
+         * i later on will do the fancy jdoc @typedef
+         *
+         * it contains, as of when this was written:
+         * @param {matrix} matrix - the game matrix, it's only the visuals and their coordinates
+         * @param {matrix} collisionGrid - A grid detailing the collisions
+         * @param {object} player - contains if the player is visible, movable and where he spawns
+         * Todo: Fix this documentation (intellisense my beloved)
+         */
+
         // Here, the 'data' variable contains the parsed JSON object.
-        // Now you can use the data to rebuild your map.
+        // Now we use the data to rebuild your map.
+
         // 2-dimensional array parser 2000
-        gameGrid = data.matrix;
+        // Reads the matrix in data, writes to the game's field
+        // ? maybe modify the field's matrix to just be references? are they references?
+        gameGrid = saveData.matrix;
         for (let row = 0; row < gameGrid.length; row++) {
           for (let column = 0; column < gameGrid[row].length; column++) {
             const loadedCell = gameGrid[row][column];
@@ -205,6 +221,16 @@ editor = {
             field.setCellContent(loadedCell.char, realCell);
           }
         }
+
+        // Now we apply the collision data
+        // see this is funny because it isnt here yet
+
+        // Now we apply the attributes of the player
+        player.visibilityAllow = saveData.player.visibilityAllow;
+        player.allowMovement = saveData.player.movementAllow;
+        console.log(saveData.player.movementAllow);
+        console.log(saveData);
+        // the intellisense can't keep up with my genius ////nonsense
       })
       .catch((error) => {
         console.error("Error fetching the JSON file:", error);
