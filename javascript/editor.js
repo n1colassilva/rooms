@@ -228,8 +228,6 @@ editor = {
         // Now we apply the attributes of the player
         player.visibilityAllow = saveData.player.visibilityAllow;
         player.allowMovement = saveData.player.movementAllow;
-        console.log(saveData.player.movementAllow);
-        console.log(saveData);
         // the intellisense can't keep up with my genius ////nonsense
       })
       .catch((error) => {
