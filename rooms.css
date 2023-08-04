@@ -93,6 +93,7 @@ header > h2 {
   display: inline-block;
   width: 0.9ch;
   height: 1em;
+  overflow: hidden;
 }
 
 #editor-wrapper {
@@ -115,7 +116,7 @@ header > h2 {
   padding: 10px;
 }
 
-#editor button {
+#editor * {
   background-color: #ffffff00;
   border-style: none;
   aspect-ratio: 1/1;
@@ -144,4 +145,16 @@ header > h2 {
 
 #editor > button :active {
   fill: rgb(177, 177, 177);
+}
+
+#charInput {
+  color: black;
+  background-color: white;
+  font-weight: bold;
+  height: 3ch;
+  width: 3ch;
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border-radius: 25%;
 }

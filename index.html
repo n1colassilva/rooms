@@ -18,9 +18,12 @@
         <table id="game-field" tabindex="0"></table>
       </div>
       <div id="editor-wrapper">
+        <script src="javascript/editor.js"></script>
+        <!-- load the editor before to make sure the buttons work -->
         <div id="editor">
-          <script src="javascript/editor.js"></script>
-          <!-- load the editor before to make sure the buttons work -->
+          <div id="input-container">
+            <input type="text" id="charInput" maxlength="1" />
+          </div>
           <button onclick="editor.make.dot()">
             <svg
               xmlns="http://www.w3.org/2000/svg"
