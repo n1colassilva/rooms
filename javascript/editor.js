@@ -234,51 +234,15 @@ editor = {
         console.error("Error fetching the JSON file:", error);
       });
   },
-
-  // tempFix: () => {
-  //   let copyMatrix = null;
-
-  //   fetch("start_menu.json")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       // Save the game grid to include it in the map package
-  //       copyMatrix = data;
-
-  //       // Continue with the rest of your code here...
-  //       const collisionGrid = {};
-  //       const playerStatus = {
-  //         movementAllow: player.allowMovement,
-  //         visibilityAllow: player.show,
-  //         spawn: null, // TODO: Figure this out
-  //       };
-  //       const saveData = {
-  //         matrix: copyMatrix,
-  //         collisionGrid: collisionGrid,
-  //         player: playerStatus,
-  //       };
-
-  //       // Function to download the JSON file
-  //       function _downloadJSON(jsonContent) {
-  //         const jsonStr = JSON.stringify(jsonContent);
-  //         const blob = new Blob([jsonStr], { type: "application/json" });
-
-  //         const downloadLink = document.createElement("a");
-  //         downloadLink.href = URL.createObjectURL(blob);
-
-  //         const filename = prompt("Enter a filename for the JSON file:");
-  //         if (filename) {
-  //           downloadLink.download = `${filename}.json`;
-  //           downloadLink.click();
-  //         } else {
-  //           alert("Filename cannot be empty. Save cancelled.");
-  //         }
-  //       }
-
-  //       // Call the function to download the JSON file
-  //       _downloadJSON(saveData);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching the JSON file:", error);
-  //     });
-  // },
 };
+
+// continuoous thignmajirg
+
+// listen for button
+// wait for 2 valid mouse clicks
+// if another button is pressed cancel the action
+// read char box and use it to draw
+const _startHoverRegistry = () {
+  hoverRegistry = new EventRegistry();
+  publishHover(cellData) = hoverRegistry.publish("hover",cellData)
+}
