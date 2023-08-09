@@ -242,7 +242,12 @@ editor = {
 // wait for 2 valid mouse clicks
 // if another button is pressed cancel the action
 // read char box and use it to draw
-const _startHoverRegistry = () {
+const _startHoverRegistry = () => {
   hoverRegistry = new EventRegistry();
-  publishHover(cellData) = hoverRegistry.publish("hover",cellData)
-}
+
+  const publishHover = (cellData) => {
+    hoverRegistry.publish("hover", cellData);
+  };
+
+  
+};
