@@ -27,9 +27,10 @@ class Field {
    * Constructs a new Field instance.
    * @param {number} columns - The number of columns in the field.
    * @param {number} rows - The number of rows in the field.
+   * @param {string} field - The DOM id of the element to contain the field
    */
-  constructor(columns, rows) {
-    this.element = document.getElementById("game-field");
+  constructor(columns, rows, field) {
+    this.element = document.getElementById(field);
     this.focus = false;
     this.columns = columns;
     this.rows = rows;
@@ -72,6 +73,12 @@ class Field {
       // CHAPTER NAME: UNFORESEEN CONSEQUENCES
       // 21/06/23 - this has actually been the best idea i had
 
+      /**
+       * A lot will be done using this Celldata object instead of the element, this is done to simplify and avoid access
+       * to things we dont need accessed
+       *
+       * The intention is basically to just hide the html wizardry
+       */
       cell.cellData = {
         x: parseInt(cell.dataset.x),
         y: parseInt(cell.dataset.y),
@@ -109,6 +116,52 @@ class Field {
         createCell.call(this, row + 1, column + 1);
       }
     }
+
+    if (gameField.columns % 2 != 0) {
+      gameField.columns++;
+    }
+    if (gameField.rows % 2 != 0) {
+      gameField.rows++;
+    }
+    const rootStyle = document.documentElement.style;
+    rootStyle.setProperty("--game-columns", gameField.columns + 1);
+    rootStyle.setProperty("--game-rows", gameField.rows + 1);
+
+    /**
+     * Dynamically creates CSS rules for a grid and applies them to an HTML element with a specific ID.
+     *
+     * @param {string} id - The ID of the HTML element where the CSS rules will be applied.
+     * @param {string} prefix - The prefix to use for CSS variable names (e.g., 'game' for '--game-columns' and '--game-rows').
+     * @return {void}
+     */
+    function createGridStyles(id, prefix) {
+      // Define the CSS rule text with the specified variable prefix
+      const cssRule = `
+      grid-template-columns: repeat(
+        var(--${prefix}-columns),
+        1fr
+      );
+      grid-template-rows: repeat(
+        var(--${prefix}-rows),
+        1ch
+      );
+    `;
+      createGridStyles("game-field", "game");
+      // Create a <style> element if it doesn't exist
+      let styleElement = document.getElementById("dynamic-styles");
+      if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "dynamic-styles";
+        document.head.appendChild(styleElement);
+      }
+
+      // Create a CSS rule with the specified ID and insert it into the <style> element
+      const styleSheet = styleElement.sheet;
+      styleSheet.insertRule(
+        `#${id} { ${cssRule} }`,
+        styleSheet.cssRules.length
+      );
+    }
   }
 
   /**
@@ -121,7 +174,7 @@ class Field {
   getCell(coordinates) {
     // Select the cell element based on the provided coordinates
     // Grabs the celldata defined at cell creation
-    const cell = field.element.querySelector(
+    const cell = gameField.element.querySelector(
       `[data-x="${coordinates.x}"][data-y="${coordinates.y}"]`
     ).cellData;
     return cell;
@@ -156,7 +209,7 @@ class Field {
     }
 
     // Select the cell element based on the extracted coordinates
-    const cellData = field.getCell({ x: x, y: y });
+    const cellData = gameField.getCell({ x: x, y: y });
 
     if (!cellData) {
       throw new Error("Invalid cell position");

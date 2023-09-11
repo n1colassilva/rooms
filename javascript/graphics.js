@@ -6,12 +6,6 @@
  */
 
 /**
- * A lot will be done using this Celldata object instead of the element, this is done to simplify and avoid access
- * to things we dont need accessed
- *
- * The intention is basically to just hide the html wizardry
- */
-/**
  * Represents data associated with a cell element.
  *
  * @typedef {Object} CellData
@@ -24,8 +18,8 @@
 /**
  * Starts a new field instance
  */
-const field = new Field(40, 20);
-field.startField();
+const gameField = new Field(40, 20, "game-field");
+gameField.startField();
 
 /**
  * Interface for selecting cells
@@ -40,7 +34,7 @@ const select = {
    * @return {CellData} - CellData object
    */
   point: function (point) {
-    cell = field.getCell(point);
+    cell = gameField.getCell(point);
     return cell;
   },
 
@@ -69,7 +63,7 @@ const select = {
     let y = startPoint.y;
 
     while (x !== endPoint.x || y !== endPoint.y) {
-      affectedCells.push(field.getCell({ x: x, y: y }));
+      affectedCells.push(gameField.getCell({ x: x, y: y }));
       const err2 = 2 * err;
       if (err2 > -dy) {
         err -= dy;
@@ -82,7 +76,7 @@ const select = {
     }
 
     // Includes the end point
-    affectedCells.push(field.getCell(endPoint));
+    affectedCells.push(gameField.getCell(endPoint));
 
     return affectedCells;
   },
@@ -122,8 +116,11 @@ const select = {
      */
 
     // Create coordinates for the other two points
-    const topRightPoint = field.getCell({ x: endPoint.x, y: startPoint.y });
-    const bottomLeftPoint = field.getCell({ x: startPoint.x, y: endPoint.y });
+    const topRightPoint = gameField.getCell({ x: endPoint.x, y: startPoint.y });
+    const bottomLeftPoint = gameField.getCell({
+      x: startPoint.x,
+      y: endPoint.y,
+    });
 
     affectedCells.push(...select.line(startPoint, topRightPoint)); // Top side
     affectedCells.push(...select.line(topRightPoint, endPoint)); // Right side
@@ -169,14 +166,14 @@ const select = {
 
     for (let j = startPointCPY.y; j <= endPointCPY.y; j++) {
       for (let i = startPointCPY.x; i <= endPointCPY.x; i++) {
-        const cell = field.getCell({ x: i, y: j }); // Capture the returned cellData object.
+        const cell = gameField.getCell({ x: i, y: j }); // Capture the returned cellData object.
         modifiedCells.push(cell); // Add the cellData object to the modifiedCells array.
       }
     }
 
     // Set the char property of the modified cells to the desired character
     modifiedCells.forEach((cell) => {
-      cell.char = field.selectedChar;
+      cell.char = gameField.selectedChar;
     });
 
     return modifiedCells; // Return the array of modified cellData objects.
@@ -196,7 +193,7 @@ const draw = {
   _setCellsContent: function (cells, char) {
     cells.forEach((cell) => {
       const { x, y } = cell;
-      field.setCellContent(char, { x, y });
+      gameField.setCellContent(char, { x, y });
     });
   },
 
@@ -211,7 +208,7 @@ const draw = {
    */
   point: (point, char, shouldReturn = false) => {
     cell = select.point(point);
-    field.setCellContent(char, point);
+    gameField.setCellContent(char, point);
     if (shouldReturn) {
       return cell;
     }
@@ -326,16 +323,3 @@ const propertySetter = {
     });
   },
 };
-
-// startup sequence
-// fix column amount to an even number
-// will be rounded UP
-if (field.columns % 2 != 0) {
-  field.columns++;
-}
-if (field.rows % 2 != 0) {
-  field.rows++;
-}
-const rootStyle = document.documentElement.style;
-rootStyle.setProperty("--columns", field.columns + 1);
-rootStyle.setProperty("--rows", field.rows + 1);

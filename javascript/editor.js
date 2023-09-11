@@ -248,6 +248,4 @@ const _startHoverRegistry = () => {
   const publishHover = (cellData) => {
     hoverRegistry.publish("hover", cellData);
   };
-
-  
 };

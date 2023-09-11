@@ -10,9 +10,9 @@ const player = {
   allowMovement: true, // flag to control movement
 
   setPosition: function (xPos, yPos) {
-    const cell = field.getCell({ x: xPos, y: yPos }); // get cell data
+    const cell = gameField.getCell({ x: xPos, y: yPos }); // get cell data
     player.position.backgroundChar = cell.char; // save background char
-    field.setCellContent(player.playerChar, cell); // make the char be the player's
+    gameField.setCellContent(player.playerChar, cell); // make the char be the player's
 
     // Update player's position
     player.position.x = xPos;
@@ -31,26 +31,29 @@ const player = {
      * @param {Int} y
      */
     function moveTo(x, y) {
-      // Check if the desired position is within the field boundaries
+      // Check if the desired position is within the gameField boundaries
       if (
-        x < -field.columns / 2 ||
-        x > field.columns / 2 ||
-        y < -field.rows / 2 ||
-        y >= field.rows / 2 + 1
+        x < -gameField.columns / 2 ||
+        x > gameField.columns / 2 ||
+        y < -gameField.rows / 2 ||
+        y >= gameField.rows / 2 + 1
       ) {
         // Invalid cell position
         throw console.error("trying to move out of bounds eh?");
-      } else if (field.getCell({ x: x, y: y }).playerCollision == true) {
+      } else if (gameField.getCell({ x: x, y: y }).playerCollision == true) {
         // yep that's right, nothing
       } else {
         // Take bgchar and set it as the char proper
-        field.setCellContent(player.position.backgroundChar, player.position);
+        gameField.setCellContent(
+          player.position.backgroundChar,
+          player.position
+        );
 
         // Take char of desired position and store it as bgchar
-        player.position.backgroundChar = field.getCell({ x: x, y: y }).char;
+        player.position.backgroundChar = gameField.getCell({ x: x, y: y }).char;
 
         // Set char proper of desired position as the player
-        field.setCellContent(player.playerChar, { x: x, y: y });
+        gameField.setCellContent(player.playerChar, { x: x, y: y });
 
         // Update player's position
         player.position.x = x;
@@ -119,7 +122,7 @@ const player = {
       const key = event.key;
 
       // Check if the arrow keys should be used for movement
-      const shouldUseArrowKeys = field.element.matches(":focus");
+      const shouldUseArrowKeys = gameField.element.matches(":focus");
 
       if (shouldUseArrowKeys) {
         switch (key) {
@@ -159,7 +162,7 @@ const player = {
   hide: () => {
     player.allowMovement = false; // Set the flag to prevent movement
     player.playerChar = "";
-    field.setCellContent("", player.position);
+    gameField.setCellContent("", player.position);
   },
 
   show: () => {
@@ -168,8 +171,8 @@ const player = {
   },
 };
 
-field.element.addEventListener("mousedown", function () {
-  field.element.focus();
+gameField.element.addEventListener("mousedown", function () {
+  gameField.element.focus();
 });
 
 player.listenForArrowKeys();

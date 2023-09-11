@@ -62,11 +62,11 @@ header > h2 {
   box-sizing: border-box;
   margin: 0px;
   grid-template-columns: repeat(
-    var(--columns),
+    var(--game-columns),
     1fr
   ); /* Adjust the width of columns as needed */
   grid-template-rows: repeat(
-    var(--rows) 1ch
+    var(--game-rows) 1ch
   ); /* Adjust the number of rows and the height of rows as needed */
   line-height: 1em; /* Remove spacing between rows */
 
