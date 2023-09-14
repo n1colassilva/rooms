@@ -1,9 +1,19 @@
 editor = {
   /**
-   * Enables and disables editor
+   * flag to store wether the editor is usable or not
    * @param {boolean} enable
    */
   enable: false,
+
+  /**
+   * Function to enable the editor
+   */
+  enableEditorSequence() {
+    this.enable = true;
+    editor._getInsertedChar();
+    console.log("Editor: online");
+    // Anything else that needs to be run
+  },
 
   /**
    * Object filled with the methods to draw stuff using the MOUSE
@@ -15,7 +25,7 @@ editor = {
         return alert("Editor not enabled");
       }
       const point = await editor.listenForCellClick();
-      const char = prompt("Enter the character to draw:");
+      const char = insertedChar;
       if (char) {
         draw.point(point, char);
       }
@@ -28,7 +38,7 @@ editor = {
       }
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
-      const char = prompt("Enter the character to draw:");
+      const char = insertedChar;
       if (char) {
         draw.line(point1, point2, char);
       }
@@ -41,7 +51,7 @@ editor = {
       }
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
-      const char = prompt("Enter the character to draw:");
+      const char = insertedChar;
       if (char) {
         draw.square(point1, point2, char);
       }
@@ -54,11 +64,31 @@ editor = {
       }
       const point1 = await editor.listenForCellClick();
       const point2 = await editor.listenForCellClick();
-      const char = prompt("Enter the character to draw:");
+      const char = insertedChar;
       if (char) {
         draw.filledSquare(point1, point2, char);
       }
     },
+  },
+
+  // variable to store most recently typed char
+  insertedChar: "",
+
+  // function that creates the listener to update said char
+  _getInsertedChar() {
+    // Get a reference to the input element by its ID
+    const charInput = document.getElementById("charInput");
+
+    // Add an event listener for the 'input' event
+    charInput.addEventListener("input", function (event) {
+      // When the user types a character, this function will be called
+      const userInput = event.target.value;
+      // You can now use 'userInput' as the character entered by the user
+      // For example, you can store it in a variable or process it further.
+
+      insertedChar = userInput;
+      console.log(insertedChar);
+    });
   },
 
   /**
@@ -70,61 +100,16 @@ editor = {
       const clickHandler = (event) => {
         const clickedCell = event;
         // Unsubscribe the click event listener
-        field.clickRegistry.unsubscribe("click", clickHandler);
+        gameField.clickRegistry.unsubscribe("click", clickHandler);
         resolve(clickedCell);
       };
 
-      field.clickRegistry.subscribe("click", clickHandler);
+      gameField.clickRegistry.subscribe("click", clickHandler);
     });
   },
 
   /**
-   * Allows you to type on the selected cells
-   *
-   * @param {Array} cells  - Array of cells to be modified
-   */
-  _editCell: (cells) => {
-    // Step 1: Make the cells editable
-    cells.forEach((cell) => {
-      cell.contentEditable = "true";
-    });
-
-    // Step 2: Handle simultaneous typing
-    // Add event listener for the "input" event on each cell
-    cells.forEach((cell) => {
-      cell.element.addEventListener("input", _handleCellInput);
-    });
-
-    // Step 3: Disable editing on Enter key press
-    // Add event listener for the "keydown" event on each cell
-    cells.forEach((cell) => {
-      cell.element.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          event.target.contentEditable = "false";
-        }
-      });
-    });
-
-    /**
-     * Event handler for simultaneous typing
-     * @param {*} event
-     */
-    function _handleCellInput(event) {
-      // Get the typed value
-      const typedValue = event.target.textContent;
-
-      // Update the content of all other cells with the typed value
-      cells.forEach((cell) => {
-        if (cell !== event.target) {
-          cell.textContent = typedValue;
-        }
-      });
-    }
-  },
-
-  /**
-   * Saves the current field matrix of cellDatae
+   * Saves the current gameField matrix of cellDatae
    * into a JSON file
    *
    * If other places need a download function move this to classes.js
@@ -155,7 +140,7 @@ editor = {
 
     // Saving the game grid to include it map package
     const copyMatrix = [];
-    const originalMatrix = field.cellMatrix.matrix;
+    const originalMatrix = gameField.cellMatrix.matrix;
 
     originalMatrix.forEach((row, rowIndex) => {
       copyMatrix[rowIndex] = [];
@@ -208,17 +193,17 @@ editor = {
         // Now we use the data to rebuild your map.
 
         // 2-dimensional array parser 2000
-        // Reads the matrix in data, writes to the game's field
-        // ? maybe modify the field's matrix to just be references? are they references?
+        // Reads the matrix in data, writes to the game's gameField
+        // ? maybe modify the gameField's matrix to just be references? are they references?
         gameGrid = saveData.matrix;
         for (let row = 0; row < gameGrid.length; row++) {
           for (let column = 0; column < gameGrid[row].length; column++) {
             const loadedCell = gameGrid[row][column];
-            const realCell = field.getCell({
+            const realCell = gameField.getCell({
               x: loadedCell.x,
               y: loadedCell.y,
             });
-            field.setCellContent(loadedCell.char, realCell);
+            gameField.setCellContent(loadedCell.char, realCell);
           }
         }
 
@@ -249,3 +234,11 @@ const _startHoverRegistry = () => {
     hoverRegistry.publish("hover", cellData);
   };
 };
+
+// This will be jank but i really need that event listener
+document
+  .getElementById("secret-editor-button")
+  .addEventListener("click", function () {
+    editor.enableEditorSequence();
+    console.log("j"); // Call the enable sequence when the button is clicked
+  });
