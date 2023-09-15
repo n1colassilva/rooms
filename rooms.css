@@ -147,6 +147,10 @@ header > h2 {
   fill: rgb(177, 177, 177);
 }
 
+.editor-button-active {
+  background-color: white;
+}
+
 #charInput {
   color: black;
   background-color: white;
