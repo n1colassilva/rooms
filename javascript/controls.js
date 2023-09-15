@@ -1,7 +1,7 @@
 // =======================start of control interface i guess?=========================
 // Center game field when clicked
 // Add a click event listener to the game field
-field.element.addEventListener("click", () => {
+gameField.element.addEventListener("click", () => {
   const fieldWrapper = document.getElementById("field-wrapper");
   const fieldHeight = fieldWrapper.offsetHeight;
   const screenHeight = window.innerHeight;
