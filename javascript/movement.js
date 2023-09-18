@@ -156,6 +156,9 @@ class Player {
       const shouldUseArrowKeys = this.gameField.element.matches(":focus");
 
       if (shouldUseArrowKeys) {
+        // Prevent arrow key scrolling when the game field is focused
+        event.preventDefault();
+
         switch (key) {
           case "ArrowUp":
             startMovement("north", key);
