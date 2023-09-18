@@ -1,128 +1,159 @@
-const player = {
-  playerChar: "█",
+/**
+ * Represents a player character with movement controls.
+ */
+class Player {
+  /**
+   * Creates a new Player instance.
+   * @param {Field} gameField - The game field instance.
+   * @param {boolean} [allowMovement=true] - Indicates if player movement is allowed.
+   * @param {string} [playerChar="█"] - The character representing the player on the game field.
+   */
+  constructor(gameField, allowMovement = true, playerChar = "█") {
+    /**
+     * The game field instance.
+     * @type {Field}
+     */
+    this.gameField = gameField;
 
-  position: {
-    x: 0,
-    y: 0,
-    backgroundChar: "", // for when he moves away
-  },
+    /**
+     * Indicates if player movement is allowed.
+     * @type {boolean}
+     */
+    this.allowMovement = allowMovement;
 
-  allowMovement: true, // flag to control movement
+    /**
+     * The character representing the player on the game field.
+     * @type {string}
+     */
+    this.playerChar = playerChar;
 
-  setPosition: function (xPos, yPos) {
-    const cell = gameField.getCell({ x: xPos, y: yPos }); // get cell data
-    player.position.backgroundChar = cell.char; // save background char
-    gameField.setCellContent(player.playerChar, cell); // make the char be the player's
+    /**
+     * The position of the player on the game field.
+     * @type {{x: number, y: number, backgroundChar: string}}
+     */
+    this.position = {
+      x: 0,
+      y: 0,
+      backgroundChar: " ",
+    };
 
-    // Update player's position
-    player.position.x = xPos;
-    player.position.y = yPos;
-  },
+    // Initialize player controls
+    this.listenForArrowKeys();
 
-  move: function (direction) {
-    // Check if the player is hidden, and prevent movement if so
-    if (!player.allowMovement) {
+    // Ensure the game field element is focused on mouse down
+    this.gameField.element.addEventListener("mousedown", () => {
+      this.gameField.element.focus();
+    });
+
+    // Set the initial position of the player
+    this.setPosition(0, 0);
+  }
+
+  /**
+   * Sets the position of the player on the game field.
+   * @param {number} xPos - The x-coordinate of the new position.
+   * @param {number} yPos - The y-coordinate of the new position.
+   */
+  setPosition(xPos, yPos) {
+    const cell = this.gameField.getCell({ x: xPos, y: yPos });
+    this.position.backgroundChar = cell.char;
+    this.gameField.setCellContent(this.playerChar, cell);
+    this.position.x = xPos;
+    this.position.y = yPos;
+  }
+
+  /**
+   * Moves the player in the specified direction.
+   * @param {string} direction - The direction in which to move the player ("north", "east", "south", or "west").
+   */
+  move(direction) {
+    if (!this.allowMovement) {
       return;
     }
 
-    /**
-     * Moves player to determined position
-     * @param {Int} x
-     * @param {Int} y
-     */
-    function moveTo(x, y) {
-      // Check if the desired position is within the gameField boundaries
-      if (
-        x < -gameField.columns / 2 ||
-        x > gameField.columns / 2 ||
-        y < -gameField.rows / 2 ||
-        y >= gameField.rows / 2 + 1
-      ) {
-        // Invalid cell position
-        throw console.error("trying to move out of bounds eh?");
-      } else if (gameField.getCell({ x: x, y: y }).playerCollision == true) {
-        // yep that's right, nothing
-      } else {
-        // Take bgchar and set it as the char proper
-        gameField.setCellContent(
-          player.position.backgroundChar,
-          player.position
-        );
-
-        // Take char of desired position and store it as bgchar
-        player.position.backgroundChar = gameField.getCell({ x: x, y: y }).char;
-
-        // Set char proper of desired position as the player
-        gameField.setCellContent(player.playerChar, { x: x, y: y });
-
-        // Update player's position
-        player.position.x = x;
-        player.position.y = y;
-      }
-    }
-
-    const pos = player.position;
+    const pos = this.position;
     switch (direction) {
       case "north":
-        moveTo(pos.x, pos.y + 1);
+        this.moveTo(pos.x, pos.y + 1);
         break;
       case "east":
-        moveTo(pos.x + 1, pos.y);
+        this.moveTo(pos.x + 1, pos.y);
         break;
       case "south":
-        moveTo(pos.x, pos.y - 1);
+        this.moveTo(pos.x, pos.y - 1);
         break;
       case "west":
-        moveTo(pos.x - 1, pos.y);
+        this.moveTo(pos.x - 1, pos.y);
         break;
       default:
         break;
     }
-  },
+  }
 
-  listenForArrowKeys: function () {
-    const movementInterval = 60; // Interval between movements in milliseconds
+  /**
+   * Move the player to a specified position on the game field.
+   * @param {number} x - The x-coordinate of the target position.
+   * @param {number} y - The y-coordinate of the target position.
+   */
+  moveTo(x, y) {
+    if (
+      x < -this.gameField.columns / 2 ||
+      x > this.gameField.columns / 2 ||
+      y < -this.gameField.rows / 2 ||
+      y >= this.gameField.rows / 2 + 1
+    ) {
+      throw new Error("Trying to move out of bounds eh?");
+    } else if (this.gameField.getCell({ x: x, y: y }).playerCollision) {
+      // No action when there's a player collision
+    } else {
+      this.gameField.setCellContent(
+        this.position.backgroundChar,
+        this.position
+      );
+      this.position.backgroundChar = this.gameField.getCell({
+        x: x,
+        y: y,
+      }).char;
+      this.gameField.setCellContent(this.playerChar, { x: x, y: y });
+      this.position.x = x;
+      this.position.y = y;
+    }
+  }
+
+  /**
+   * Listens for arrow key presses to control player movement.
+   */
+  listenForArrowKeys() {
+    const movementInterval = 60;
     let movementTimer = null;
-    const activeDirections = {}; // Track active movement directions and their key codes
+    const activeDirections = {};
 
-    /**
-     * Starts the movement in the specified direction.
-     * @param {string} direction - The cardinal direction in which the movement should occur.
-     * @param {string} keyCode - The key code associated with the direction.
-     */
-    function startMovement(direction, keyCode) {
-      activeDirections[direction] = keyCode; // Store the direction and its key code
+    const startMovement = (direction, keyCode) => {
+      activeDirections[direction] = keyCode;
       if (!movementTimer) {
-        movementTimer = setInterval(function () {
+        movementTimer = setInterval(() => {
           for (const direction in activeDirections) {
             if (activeDirections.hasOwnProperty(direction)) {
-              player.move(direction);
+              this.move(direction);
             }
           }
         }, movementInterval);
       }
-    }
+    };
 
-    /**
-     * Stops the movement in the specified direction.
-     * @param {string} direction - The cardinal direction to stop the movement.
-     * @param {string} keyCode - The key code associated with the direction.
-     */
-    function stopMovement(direction, keyCode) {
-      delete activeDirections[direction]; // Remove the direction and its key code
+    const stopMovement = (direction, keyCode) => {
+      delete activeDirections[direction];
       if (Object.keys(activeDirections).length === 0) {
         if (movementTimer) {
           clearInterval(movementTimer);
           movementTimer = null;
         }
       }
-    }
+    };
 
-    document.addEventListener("keydown", function (event) {
+    document.addEventListener("keydown", (event) => {
       const key = event.key;
-
-      // Check if the arrow keys should be used for movement
-      const shouldUseArrowKeys = gameField.element.matches(":focus");
+      const shouldUseArrowKeys = this.gameField.element.matches(":focus");
 
       if (shouldUseArrowKeys) {
         switch (key) {
@@ -139,13 +170,12 @@ const player = {
             startMovement("east", key);
             break;
           default:
-            // Ignore other key presses
             break;
         }
       }
     });
 
-    document.addEventListener("keyup", function (event) {
+    document.addEventListener("keyup", (event) => {
       const key = event.key;
 
       if (key.startsWith("Arrow")) {
@@ -157,23 +187,27 @@ const player = {
         }
       }
     });
-  },
+  }
 
-  hide: () => {
-    player.allowMovement = false; // Set the flag to prevent movement
-    player.playerChar = "";
-    gameField.setCellContent("", player.position);
-  },
+  /**
+   * Hides the player character.
+   */
+  hide() {
+    this.allowMovement = false;
+    this.playerChar = "";
+    this.gameField.setCellContent("", this.position);
+  }
 
-  show: () => {
-    player.allowMovement = true; // Set the flag to allow movement again
-    player.playerChar = "█";
-  },
-};
+  /**
+   * Shows the player character.
+   */
+  show() {
+    this.allowMovement = true;
+    this.playerChar = "█";
+  }
+}
 
-gameField.element.addEventListener("mousedown", function () {
+const player = new Player(gameField);
+gameField.element.addEventListener("mousedown", () => {
   gameField.element.focus();
 });
-
-player.listenForArrowKeys();
-player.setPosition(0, 0);

@@ -1,2 +1,2 @@
-const popupfield = new Field(10, 20, "popup-field");
+const popupfield = new Field(10, 10, "popup-field");
 popupfield.startField();

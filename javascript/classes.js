@@ -27,7 +27,7 @@ class Field {
    * Constructs a new Field instance.
    * @param {number} columns - The number of columns in the field.
    * @param {number} rows - The number of rows in the field.
-   * @param {string} field - The DOM id of the element to contain the field
+   * @param {string} field - The DOM id of the element to contain the field.
    */
   constructor(columns, rows, field) {
     this.element = document.getElementById(field);
@@ -130,23 +130,21 @@ class Field {
     /**
      * Dynamically creates CSS rules for a grid and applies them to an HTML element with a specific ID.
      *
-     * @param {string} id - The ID of the HTML element where the CSS rules will be applied.
-     * @param {string} prefix - The prefix to use for CSS variable names (e.g., 'game' for '--game-columns' and '--game-rows').
+     * @param {HTMLElement} gridElement - The ID of the HTML element where the CSS rules will be applied.
      * @return {void}
      */
-    function createGridStyles(id, prefix) {
+    function createGridStyles(gridElement) {
       // Define the CSS rule text with the specified variable prefix
       const cssRule = `
       grid-template-columns: repeat(
-        var(--${prefix}-columns),
+        var(--${gridElement.id}-columns),
         1fr
       );
       grid-template-rows: repeat(
-        var(--${prefix}-rows),
+        var(--${gridElement.id}-rows),
         1ch
       );
     `;
-      createGridStyles("game-field", "game");
       // Create a <style> element if it doesn't exist
       let styleElement = document.getElementById("dynamic-styles");
       if (!styleElement) {
@@ -158,7 +156,7 @@ class Field {
       // Create a CSS rule with the specified ID and insert it into the <style> element
       const styleSheet = styleElement.sheet;
       styleSheet.insertRule(
-        `#${id} { ${cssRule} }`,
+        `#${gridElement.id} { ${cssRule} }`,
         styleSheet.cssRules.length
       );
     }
