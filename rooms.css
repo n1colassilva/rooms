@@ -60,14 +60,9 @@ header > h2 {
 #game-field {
   display: grid;
   box-sizing: border-box;
-  margin: 0px; 
-  grid-template-columns: repeat(
-    var(--game-columns),
-    1fr
-  ); 
-  grid-template-rows: repeat(
-    var(--game-rows) 1ch
-  ); 
+  margin: 0px;
+  grid-template-columns: repeat(var(--game-columns), 1fr);
+  grid-template-rows: repeat(var(--game-rows) 1ch);
   line-height: 1em; /* Remove spacing between rows */
 
   gap: 0px;
@@ -170,13 +165,6 @@ header > h2 {
   display: grid;
   box-sizing: border-box;
   margin: 0px;
-  grid-template-columns: repeat(
-    var(--popup-columns),
-    1fr
-  ); /* Adjust the width of columns as needed */
-  grid-template-rows: repeat(
-    var(--popup-rows) 1ch
-  ); /* Adjust the number of rows and the height of rows as needed */
   line-height: 1em; /* Remove spacing between rows */
 
   gap: 0px;
