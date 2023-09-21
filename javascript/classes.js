@@ -23,6 +23,7 @@
  * The game field, now made to be reused!
  */
 class Field {
+  static fieldCounter = 0; // counts how many field instances have been made
   /**
    * Constructs a new Field instance.
    * @param {number} columns - The number of columns in the field.
@@ -36,6 +37,8 @@ class Field {
     this.rows = rows;
     this.cellMatrix = null;
     this.clickRegistry = null;
+    Field.fieldCounter++;
+    this.fieldIndex = Field.fieldCounter;
   }
 
   /**
@@ -165,7 +168,10 @@ class Field {
       );
       rootStyle.setProperty(`--${gridElement.id}-rows`, gameField.rows + 1);
     }
+    // Setting up the grid styles
     createGridStyles(this.element);
+    // Gives the field index as the tab index
+    this.element.tabIndex = this.fieldIndex;
   }
 
   /**
