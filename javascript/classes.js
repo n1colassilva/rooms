@@ -123,9 +123,6 @@ class Field {
     if (gameField.rows % 2 != 0) {
       gameField.rows++;
     }
-    const rootStyle = document.documentElement.style;
-    rootStyle.setProperty("--game-columns", gameField.columns + 1);
-    rootStyle.setProperty("--game-rows", gameField.rows + 1);
 
     /**
      * Dynamically creates CSS rules for a grid and applies them to an HTML element with a specific ID.
@@ -144,7 +141,7 @@ class Field {
         var(--${gridElement.id}-rows),
         1ch
       );
-    `;
+      `;
       // Create a <style> element if it doesn't exist
       let styleElement = document.getElementById("dynamic-styles");
       if (!styleElement) {
@@ -159,7 +156,16 @@ class Field {
         `#${gridElement.id} { ${cssRule} }`,
         styleSheet.cssRules.length
       );
+
+      // actually set the value
+      const rootStyle = document.documentElement.style;
+      rootStyle.setProperty(
+        `--${gridElement.id}-columns`,
+        gameField.columns + 1
+      );
+      rootStyle.setProperty(`--${gridElement.id}-rows`, gameField.rows + 1);
     }
+    createGridStyles(this.element);
   }
 
   /**
