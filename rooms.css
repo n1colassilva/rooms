@@ -57,18 +57,15 @@ header > h2 {
   font-size: smaller;
 }
 
-#game-field {
+.field {
   display: grid;
   box-sizing: border-box;
   margin: 0px;
-  grid-template-columns: repeat(var(--game-columns), 1fr);
-  grid-template-rows: repeat(var(--game-rows) 1ch);
-  line-height: 1em; /* Remove spacing between rows */
-
+  line-height: 1em;
   gap: 0px;
 }
 
-#game-field:focus {
+.field:focus {
   color: white;
   outline: white;
   outline-style: dotted;
@@ -159,13 +156,4 @@ header > h2 {
 }
 
 .popup {
-}
-
-#popup-field {
-  display: grid;
-  box-sizing: border-box;
-  margin: 0px;
-  line-height: 1em; /* Remove spacing between rows */
-
-  gap: 0px;
 }
