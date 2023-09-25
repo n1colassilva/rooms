@@ -322,4 +322,15 @@ const propertySetter = {
       element.playerCollision = true;
     });
   },
+
+  /**
+   * Manages a whole area as a button
+   */
+  button: function (cells) {
+    cells = inputUtil.arrayer(cells);
+
+    cells.forEach((element) => {
+      
+    });
+  },
 };
