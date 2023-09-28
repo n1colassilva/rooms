@@ -325,12 +325,28 @@ const propertySetter = {
 
   /**
    * Manages a whole area as a button
+   * @param {CellData[]} cells - cells to be modified
+   * yes, it uses cellData, what did you expect
    */
-  button: function (cells) {
-    cells = inputUtil.arrayer(cells);
+  button: (cells) => {
+    /**
+     * Handles the click event for a button-like area.
+     *
+     * @param {Event} event - The click event object.
+     * @return {void}
+     */
+    function clickHandler(event) {
+      // Your code to handle the click event goes here
 
-    cells.forEach((element) => {
-      
+      // Remove the click event listener from all cells
+      cells.forEach((cell) => {
+        cell.element.removeEventListener("click", clickHandler);
+      });
+    }
+
+    // Add the click event listener to all cells
+    cells.forEach((cell) => {
+      cell.element.addEventListener("click", clickHandler);
     });
   },
 };
