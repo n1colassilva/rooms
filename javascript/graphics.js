@@ -336,8 +336,6 @@ const propertySetter = {
      * @return {void}
      */
     function clickHandler(event) {
-      // Your code to handle the click event goes here
-
       // Remove the click event listener from all cells
       cells.forEach((cell) => {
         cell.element.removeEventListener("click", clickHandler);

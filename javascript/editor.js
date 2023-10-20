@@ -140,9 +140,11 @@ const editor = {
 // Wait for 2 valid mouse clicks
 // If another button is pressed, cancel the action
 // Read char box and use it to draw
+// eslint-disable-next-line no-unused-vars
 const _startHoverRegistry = () => {
   hoverRegistry = new EventRegistry();
 
+  // eslint-disable-next-line no-unused-vars
   const publishHover = (cellData) => {
     hoverRegistry.publish("hover", cellData);
   };
