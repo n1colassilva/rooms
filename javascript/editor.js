@@ -75,6 +75,14 @@ const editor = {
   },
 
   /**
+   * Starts the save manager UI
+   */
+  startSaveManager() {
+    const saveManagerField = new PopupField(60, 40, "saveManagerField");
+    saveManagerField.startField();
+  },
+
+  /**
    * Function to retrieve the inserted character from the input element.
    * @return {string} The inserted character.
    */

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * This file contains several classes and other stuffs used throughout the app
  *

@@ -1,13 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 const saveManager = {
   /**
-   * Saves the current gameField matrix of cellDatae
+   * Saves the current field matrix of cellDatae
    * into a JSON file
    *
-   * If other places need a download function move this to classes.js
-   * and make this just call the function with whatever modifications needed
+   * @param {field} field - a field that already exists
    */
-  save: () => {
+  save(field) {
     /**
      * Downloads a JSON object as a file.
      * Prompts the user to enter a filename and initiates the download.
@@ -32,7 +31,7 @@ const saveManager = {
 
     // Saving the game grid to include it map package
     const copyMatrix = [];
-    const originalMatrix = gameField.cellMatrix.matrix;
+    const originalMatrix = field.cellMatrix.matrix;
 
     originalMatrix.forEach((row, rowIndex) => {
       copyMatrix[rowIndex] = [];
@@ -65,8 +64,13 @@ const saveManager = {
     _downloadJSON(saveData);
   },
 
-  load: () => {
-    fetch("menu.json")
+  /**
+   * Loads data from json into field object
+   * @param {field} field - Field object
+   * @param {json} fileName - File to be loaded into specified field object
+   */
+  load(field, fileName) {
+    fetch(fileName)
       .then((response) => response.json())
       .then((saveData) => {
         /**
@@ -85,17 +89,17 @@ const saveManager = {
         // Now we use the data to rebuild your map.
 
         // 2-dimensional array parser 2000
-        // Reads the matrix in data, writes to the game's gameField
-        // ? maybe modify the gameField's matrix to just be references? are they references?
+        // Reads the matrix in data, writes to the game's field
+        // ? maybe modify the field's matrix to just be references? are they references?
         gameGrid = saveData.matrix;
         for (let row = 0; row < gameGrid.length; row++) {
           for (let column = 0; column < gameGrid[row].length; column++) {
             const loadedCell = gameGrid[row][column];
-            const realCell = gameField.getCell({
+            const realCell = field.getCell({
               x: loadedCell.x,
               y: loadedCell.y,
             });
-            gameField.setCellContent(loadedCell.char, realCell);
+            field.setCellContent(loadedCell.char, realCell);
           }
         }
 
