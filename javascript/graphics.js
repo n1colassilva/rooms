@@ -18,7 +18,7 @@
 /**
  * Starts a new field instance
  */
-const gameField = new Field(80, 40, "game-field");
+const gameField = new Field(60, 10, "game-field");
 gameField.startField();
 
 /**

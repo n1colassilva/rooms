@@ -143,7 +143,6 @@ class Field {
       );
       grid-template-rows: repeat(
         var(--${gridElement.id}-rows),
-        1ch
       );
       `;
       // Create a <style> element if it doesn't exist
@@ -173,6 +172,24 @@ class Field {
     createGridStyles(this.element);
     // Gives the field index as the tab index
     this.element.tabIndex = this.fieldIndex;
+
+    // Usefull grid constants
+    TOP_RIGHT: {
+      x: gameField.columns / 2;
+      y: gameField.rows / 2;
+    }
+    TOP_LEFT: {
+      x: -gameField.columns / 2;
+      y: gameField.rows / 2;
+    }
+    BOTTOM_RIGHT: {
+      x: gameField.columns / 2;
+      y: -gameField.rows / 2;
+    }
+    BOTTOM_LEFT: {
+      x: -gameField.columns / 2;
+      y: -gameField.rows / 2;
+    }
   }
 
   /**

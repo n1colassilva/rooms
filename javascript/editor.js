@@ -72,14 +72,86 @@ const editor = {
         editor.btnVisualStateFlipper("filledsquare");
       }
     },
+
+    dialogBox: async function () {
+      if (editor.enable === false) {
+        return alert("Editor not enabled");
+      }
+
+      const point1 = await editor.listenForCellClick();
+      const point2 = await editor.listenForCellClick();
+      const cornerChar = {
+        topLeft: "┏",
+        topRight: "┓",
+        bottomLeft: "┗",
+        bottomRight: "┛",
+      };
+
+      if (
+        !cornerChar.topLeft ||
+        !cornerChar.topRight ||
+        !cornerChar.bottomLeft ||
+        !cornerChar.bottomRight
+      ) {
+        return;
+      }
+
+      const startPoint = Object.assign({}, point1);
+      const endPoint = Object.assign({}, point2);
+
+      // Calculate the coordinates for the corners
+      const topLeft = startPoint;
+      const topRight = { x: endPoint.x, y: startPoint.y };
+      const bottomLeft = { x: startPoint.x, y: endPoint.y };
+      const bottomRight = endPoint;
+
+      // Make sure the startPoint is the top left and the endPoint is the bottom right
+      if (topRight.x < topLeft.x) {
+        [topLeft.x, topRight.x] = [topRight.x, topLeft.x];
+      }
+
+      if (bottomRight.x < bottomLeft.x) {
+        [bottomLeft.x, bottomRight.x] = [bottomRight.x, bottomLeft.x];
+      }
+
+      if (topLeft.y < bottomLeft.y) {
+        [topLeft.y, bottomLeft.y] = [bottomLeft.y, topLeft.y];
+      }
+
+      if (topRight.y < bottomRight.y) {
+        [topRight.y, bottomRight.y] = [bottomRight.y, topRight.y];
+      }
+
+      // Draw the horizontal lines
+      const horizontalChar = "━";
+      draw.line(topLeft, topRight, horizontalChar);
+      draw.line(bottomLeft, bottomRight, horizontalChar);
+
+      // Draw the vertical lines
+      const verticalChar = "┃";
+      draw.line(topLeft, bottomLeft, verticalChar);
+      draw.line(topRight, bottomRight, verticalChar);
+
+      // Draw the corners
+      draw.point(topLeft, cornerChar.topLeft);
+      draw.point(topRight, cornerChar.topRight);
+      draw.point(bottomLeft, cornerChar.bottomLeft);
+      draw.point(bottomRight, cornerChar.bottomRight);
+
+      editor.btnVisualStateFlipper("dialogBox");
+    },
   },
 
   /**
    * Starts the save manager UI
+   *
+   * @return {Field}
    */
   startSaveManager() {
-    const saveManagerField = new PopupField(60, 40, "saveManagerField");
+    const saveManagerField = new PopupField(60, 40, "save-manager-field");
     saveManagerField.startField();
+
+    return saveManagerField;
   },
 
   /**
@@ -158,7 +230,7 @@ const _startHoverRegistry = () => {
   };
 };
 
-// This will be jank but I really need that event listener
+// This will be jank but I really need that event listener for the editor button
 document
   .getElementById("secret-editor-button")
   .addEventListener("click", function () {

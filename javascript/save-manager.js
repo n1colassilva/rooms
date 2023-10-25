@@ -2,11 +2,11 @@
 const saveManager = {
   /**
    * Saves the current field matrix of cellDatae
-   * into a JSON file
+   * into a JSON file.
    *
-   * @param {field} field - a field that already exists
+   * @param {Field} field - The field to be saved.
    */
-  save(field) {
+  save: (field) => {
     /**
      * Downloads a JSON object as a file.
      * Prompts the user to enter a filename and initiates the download.

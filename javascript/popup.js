@@ -6,19 +6,20 @@ class PopupField {
   /**
    * @param {number} sizeX - Width of field
    * @param {number} sizeY - Height of field
-   * @param {string} fieldName - Name of field
+   * @param {HTMLid} fieldName - id of field
    */
   constructor(sizeX, sizeY, fieldName) {
-    const popupfield = new Field(sizeX, sizeY, fieldName);
+    this.popupfield = new Field(sizeX, sizeY, fieldName);
   }
 
   /**
    * Starts up the popup field
    *
    * activated manually to avoid unintended behaviour.
+   * @return {Field} Returns field element in case you want it for some reason.
    */
   startField() {
-    this.popupfield.startField();
+    return this.popupfield.startField();
   }
 
   /**
